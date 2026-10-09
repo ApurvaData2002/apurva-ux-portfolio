@@ -1,0 +1,47 @@
+---
+// Figma: NextProject. A full-width link to the next case study at the end of a
+// case study. Its accessible name reads "Next project: <title>".
+import Icon from './Icon.astro';
+
+interface Props {
+  href: string;
+  title: string;
+  label?: string;
+}
+
+const { href, title, label = 'Next project' } = Astro.props;
+---
+
+<a class="next-project" href={href}>
+  <span class="next-project__text">
+    <span class="t-eyebrow next-project__label">{label}<span class="sr-only">: </span></span>
+    <span class="t-h2 next-project__title">{title}</span>
+  </span>
+  <Icon name="next" size={24} class="next-project__icon" />
+</a>
+
+<style>
+  .next-project {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-16);
+    padding-block: var(--space-32);
+    color: var(--text-primary);
+  }
+
+  .next-project__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    min-width: 0;
+  }
+
+  .next-project__label {
+    color: var(--text-muted);
+  }
+
+  .next-project :global(.next-project__icon) {
+    color: var(--icon-default);
+  }
+</style>

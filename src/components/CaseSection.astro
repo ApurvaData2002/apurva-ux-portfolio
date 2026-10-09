@@ -1,0 +1,124 @@
+---
+// Figma: CaseSection (Layout=Stacked | Split; Breakpoint=Desktop | Tablet | Mobile).
+// Eyebrow ("02 · Constraints") + H2 + paragraphs + optional image.
+// Stacked: full-width image under the text. Split: text 5/11, image 6/11.
+// Mobile is always stacked, and a split section shows its imageMobile there.
+import CaseImage from './CaseImage.astro';
+import { imageSizes } from '../lib/image-sizes';
+
+interface Props {
+  /** 1-based position, shown as "01", "02"... */
+  number: number;
+  eyebrow: string;
+  heading: string;
+  paragraphs: string[];
+  layout: 'stacked' | 'split';
+  image?: string;
+  imageMobile?: string;
+  alt?: string;
+}
+
+const { number, eyebrow, heading, paragraphs, layout, image, imageMobile, alt = '' } = Astro.props;
+const id = `section-${String(number).padStart(2, '0')}`;
+const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
+---
+
+<section class:list={['case-section', `case-section--${layout}`, { 'case-section--has-image': image }]} aria-labelledby={id}>
+  <div class="case-section__text">
+    <p class="t-eyebrow case-section__eyebrow">{String(number).padStart(2, '0')} · {eyebrow}</p>
+    <h2 id={id} class="t-h2">{heading}</h2>
+    <div class="case-section__body t-body">
+      {paragraphs.map((p) => <p>{p}</p>)}
+    </div>
+  </div>
+  {
+    image && (
+      <div class="case-section__media">
+        <CaseImage
+          src={image}
+          mobileSrc={layout === 'split' ? imageMobile : undefined}
+          alt={alt}
+          widths={size.widths}
+          sizes={size.sizes}
+          mobileWidths={imageSizes.splitMobile.widths}
+          mobileSizes={imageSizes.splitMobile.sizes}
+        />
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .case-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--page-stack-gap);
+  }
+
+  .case-section__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+  }
+
+  .case-section__eyebrow {
+    color: var(--text-muted);
+  }
+
+  .case-section__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+  }
+
+  /* Mobile image box: 361x200 in the frames. overflow keeps the box at its
+     aspect ratio instead of growing to the image's own height. */
+  .case-section__media {
+    aspect-ratio: 361 / 200;
+    overflow: hidden;
+  }
+
+  @media (min-width: 48em) {
+    .case-section--stacked .case-section__text {
+      max-width: 560px;
+    }
+
+    .case-section--stacked .case-section__media {
+      aspect-ratio: 704 / 400;
+    }
+
+    .case-section--split.case-section--has-image {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+      gap: var(--space-32);
+    }
+
+    .case-section--split .case-section__media {
+      aspect-ratio: 336 / 256;
+    }
+  }
+
+  @media (min-width: 64em) {
+    .case-section--stacked .case-section__text {
+      max-width: 640px;
+    }
+
+    .case-section--stacked .case-section__media {
+      aspect-ratio: 1008 / 568;
+    }
+
+    .case-section--split.case-section--has-image {
+      grid-template-columns: minmax(0, 440fr) minmax(0, 536fr);
+    }
+
+    .case-section--split .case-section__media {
+      aspect-ratio: 536 / 400;
+    }
+  }
+
+  /* A split section without an image reads like a stacked one. */
+  .case-section--split:not(.case-section--has-image) .case-section__text {
+    max-width: 640px;
+  }
+</style>

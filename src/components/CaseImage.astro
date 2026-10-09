@@ -1,0 +1,90 @@
+---
+// A case-study image as <picture>: AVIF + WebP at several widths, with an
+// optional different image on mobile (split sections use their 16:9 "wide"
+// export there). The box size comes from the parent (aspect-ratio + cover),
+// so width/height here only describe the file.
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { resolveImage } from '../lib/images';
+
+interface Props {
+  src: string;
+  /** Used below 768px instead of src. */
+  mobileSrc?: string;
+  alt: string;
+  widths: number[];
+  sizes: string;
+  /** Widths and sizes for mobileSrc (defaults to the main ones). */
+  mobileWidths?: number[];
+  mobileSizes?: string;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'auto';
+  class?: string;
+}
+
+const {
+  src,
+  mobileSrc,
+  alt,
+  widths,
+  sizes,
+  mobileWidths = widths,
+  mobileSizes = sizes,
+  loading = 'lazy',
+  fetchpriority = 'auto',
+  class: className,
+} = Astro.props;
+
+const MOBILE = '(max-width: 47.99em)';
+
+async function variants(image: ImageMetadata, ws: number[], sz: string) {
+  const usable = ws.filter((w) => w <= image.width);
+  if (usable.length === 0) usable.push(image.width);
+  const [avif, webp] = await Promise.all(
+    (['avif', 'webp'] as const).map((format) => getImage({ src: image, widths: usable, sizes: sz, format })),
+  );
+  return { avif, webp };
+}
+
+const main = resolveImage(src);
+const desktop = await variants(main, widths, sizes);
+const mobile = mobileSrc ? await variants(resolveImage(mobileSrc), mobileWidths, mobileSizes) : undefined;
+---
+
+<picture class:list={['case-image', className]}>
+  {
+    mobile && (
+      <>
+        <source media={MOBILE} type="image/avif" srcset={mobile.avif.srcSet.attribute} sizes={mobileSizes} />
+        <source media={MOBILE} type="image/webp" srcset={mobile.webp.srcSet.attribute} sizes={mobileSizes} />
+      </>
+    )
+  }
+  <source type="image/avif" srcset={desktop.avif.srcSet.attribute} sizes={sizes} />
+  <img
+    src={desktop.webp.src}
+    srcset={desktop.webp.srcSet.attribute}
+    sizes={sizes}
+    width={main.width}
+    height={main.height}
+    alt={alt}
+    loading={loading}
+    fetchpriority={fetchpriority}
+    decoding="async"
+  />
+</picture>
+
+<style>
+  .case-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--surface-placeholder);
+  }
+
+  .case-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>

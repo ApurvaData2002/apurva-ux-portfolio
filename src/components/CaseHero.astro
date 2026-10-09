@@ -1,0 +1,72 @@
+---
+// Figma: hero-block on a case study. H1 + summary, hero image, MetaRow, Divider.
+import CaseImage from './CaseImage.astro';
+import MetaRow from './MetaRow.astro';
+import Divider from './Divider.astro';
+import { imageSizes } from '../lib/image-sizes';
+
+interface Props {
+  title: string;
+  summary: string;
+  hero: string;
+  heroAlt: string;
+  roles: { label: string; text: string }[];
+}
+
+const { title, summary, hero, heroAlt, roles } = Astro.props;
+---
+
+<header class="case-hero">
+  <div class="case-hero__intro">
+    <h1 class="t-h1">{title}</h1>
+    <p class="t-lead case-hero__summary">{summary}</p>
+  </div>
+  <div class="case-hero__media">
+    <CaseImage
+      src={hero}
+      alt={heroAlt}
+      widths={imageSizes.wide.widths}
+      sizes={imageSizes.wide.sizes}
+      loading="eager"
+      fetchpriority="high"
+    />
+  </div>
+  <MetaRow roles={roles} />
+  <Divider />
+</header>
+
+<style>
+  .case-hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--page-stack-gap);
+  }
+
+  .case-hero__intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+  }
+
+  .case-hero__summary {
+    max-width: 640px;
+  }
+
+  /* Image box sizes from the frames: 1008x568, 704x400, 361x200 */
+  .case-hero__media {
+    aspect-ratio: 361 / 200;
+    overflow: hidden;
+  }
+
+  @media (min-width: 48em) {
+    .case-hero__media {
+      aspect-ratio: 704 / 400;
+    }
+  }
+
+  @media (min-width: 64em) {
+    .case-hero__media {
+      aspect-ratio: 1008 / 568;
+    }
+  }
+</style>

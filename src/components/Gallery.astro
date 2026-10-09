@@ -1,0 +1,66 @@
+---
+// Figma: process-artefacts. Eyebrow ("08 · Process") + H2 + a grid of square
+// images: 3 columns on desktop and tablet, 2 on mobile.
+import CaseImage from './CaseImage.astro';
+import { imageSizes } from '../lib/image-sizes';
+
+interface Props {
+  number: number;
+  heading: string;
+  images: { src: string; alt: string }[];
+}
+
+const { number, heading, images } = Astro.props;
+const id = 'gallery-heading';
+---
+
+<section class="gallery" aria-labelledby={id}>
+  <div class="gallery__text">
+    <p class="t-eyebrow gallery__eyebrow">{String(number).padStart(2, '0')} · Process</p>
+    <h2 id={id} class="t-h2">{heading}</h2>
+  </div>
+  <ul class="gallery__grid" role="list">
+    {
+      images.map((image) => (
+        <li class="gallery__item">
+          <CaseImage src={image.src} alt={image.alt} widths={imageSizes.gallery.widths} sizes={imageSizes.gallery.sizes} />
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .gallery {
+    display: flex;
+    flex-direction: column;
+    gap: var(--page-stack-gap);
+  }
+
+  .gallery__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+  }
+
+  .gallery__eyebrow {
+    color: var(--text-muted);
+  }
+
+  .gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gallery-gap);
+  }
+
+  @media (min-width: 48em) {
+    .gallery__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .gallery__item {
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+</style>

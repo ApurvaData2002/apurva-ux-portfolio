@@ -1,0 +1,73 @@
+---
+// Case-study page. One page per published case study; drafts get no page.
+// Everything on it comes from src/content/case-studies/<slug>.mdx, and the
+// number of sections is whatever the file has.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CaseHero from '../../components/CaseHero.astro';
+import CaseSection from '../../components/CaseSection.astro';
+import Gallery from '../../components/Gallery.astro';
+import NextProject from '../../components/NextProject.astro';
+import Divider from '../../components/Divider.astro';
+import { getNextCaseStudy, getPublishedCaseStudies, type CaseStudy } from '../../lib/case-studies';
+
+export async function getStaticPaths() {
+  const published = await getPublishedCaseStudies();
+  return published.map((entry) => ({
+    params: { slug: entry.data.slug },
+    props: { entry, next: getNextCaseStudy(entry, published) },
+  }));
+}
+
+interface Props {
+  entry: CaseStudy;
+  next?: CaseStudy;
+}
+
+const { entry, next } = Astro.props;
+const { data } = entry;
+---
+
+<BaseLayout title={data.title} description={data.summary} image={data.hero}>
+  <div class="case-study">
+    <CaseHero title={data.title} summary={data.summary} hero={data.hero} heroAlt={data.heroAlt} roles={data.roles} />
+
+    <div class="case-study__body">
+      {data.sections.map((section, i) => <CaseSection number={i + 1} {...section} />)}
+    </div>
+
+    {
+      data.gallery.length > 0 && (
+        <Gallery number={data.sections.length + 1} heading={data.galleryHeading ?? 'Process'} images={data.gallery} />
+      )
+    }
+  </div>
+
+  <div slot="footer" class="case-study__footer">
+    {
+      next && (
+        <>
+          <Divider />
+          <NextProject href={`/case-studies/${next.data.slug}`} title={next.data.cardTitle ?? next.data.title} />
+        </>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .case-study {
+    display: flex;
+    flex-direction: column;
+    gap: var(--page-section-gap);
+  }
+
+  .case-study__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--case-section-gap);
+  }
+
+  .case-study__footer {
+    margin-top: var(--page-section-gap);
+  }
+</style>

@@ -1,0 +1,49 @@
+---
+// Figma: meta-row under the case-study hero (My role / Team & context / Tools).
+// A description list: labels look like H3 but are not headings, so the page
+// outline stays H1 > H2.
+interface Props {
+  roles: { label: string; text: string }[];
+}
+
+const { roles } = Astro.props;
+---
+
+<dl class="meta-row">
+  {
+    roles.map((role) => (
+      <div class="meta-row__col">
+        <dt class="t-h3">{role.label}</dt>
+        <dd class="t-body">{role.text}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-24);
+    color: var(--text-primary);
+  }
+
+  @media (min-width: 48em) {
+    .meta-row {
+      flex-direction: row;
+      gap: var(--meta-col-gap);
+    }
+  }
+
+  .meta-row__col {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: var(--space-8);
+    min-width: 0;
+  }
+
+  .meta-row dd {
+    margin: 0;
+  }
+</style>

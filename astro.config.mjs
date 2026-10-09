@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import draftGuard from './src/integrations/draft-guard.ts';
+import copyGuard from './src/integrations/copy-guard.ts';
 
 // Domain-agnostic: the site URL comes from the environment, never from code.
 // SITE_URL wins (set it in Vercel when a custom domain is added); otherwise
@@ -16,5 +17,5 @@ const site =
 export default defineConfig({
   site,
   output: 'static',
-  integrations: [mdx(), draftGuard()],
+  integrations: [mdx(), draftGuard(), copyGuard()],
 });
