@@ -1,0 +1,83 @@
+---
+// Figma: Error404 (Input=Pointer | Touch, State=Default | Morse).
+// "4 [avatar] 4", announced as "404". Easter egg: hover (pointer) or tap (touch)
+// swaps it for "····− −−−−− ····−" (404 in Morse) for 1.6 s. The swap is purely
+// decorative: the Morse is aria-hidden and nothing here takes keyboard focus.
+// Height is locked to the display line height so the swap never shifts layout.
+import AvatarWave from './AvatarWave.astro';
+---
+
+<div class="error-404" role="img" aria-label="404" data-error-404 data-state="default">
+  <span class="error-404__digits" aria-hidden="true">
+    <span class="t-display">4</span>
+    <AvatarWave size={112} displaySize="var(--size-avatar-404)" interaction="none" />
+    <span class="t-display">4</span>
+  </span>
+  <span class="error-404__morse t-morse" aria-hidden="true">····− −−−−− ····−</span>
+</div>
+
+<style>
+  .error-404 {
+    display: grid;
+    align-items: center;
+    justify-items: start;
+    width: fit-content;
+    max-width: 100%;
+    height: var(--type-display-line);
+    color: var(--text-primary);
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .error-404__digits,
+  .error-404__morse {
+    grid-area: 1 / 1;
+    transition: opacity var(--duration-tile) var(--ease-out);
+  }
+
+  .error-404__digits {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+  }
+
+  .error-404__morse {
+    color: var(--text-accent);
+    white-space: nowrap;
+    /* Keeps the Morse inside a 320px screen. */
+    font-size: min(var(--type-morse-size), 9vw);
+    opacity: 0;
+  }
+
+  [data-state='morse'] .error-404__digits {
+    opacity: 0;
+  }
+
+  [data-state='morse'] .error-404__morse {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  const SHOW_FOR = 1600;
+
+  for (const el of document.querySelectorAll<HTMLElement>('[data-error-404]')) {
+    let timer = 0;
+    const set = (state: 'default' | 'morse') => (el.dataset.state = state);
+
+    el.addEventListener('pointerenter', (e) => {
+      if (e.pointerType === 'mouse') set('morse');
+    });
+    el.addEventListener('pointerleave', (e) => {
+      if (e.pointerType === 'mouse') set('default');
+    });
+    // Touch: tap shows the Morse for 1.6 s; tap again to dismiss.
+    el.addEventListener('pointerup', (e) => {
+      if (e.pointerType === 'mouse') return;
+      clearTimeout(timer);
+      if (el.dataset.state === 'morse') return set('default');
+      set('morse');
+      timer = window.setTimeout(() => set('default'), SHOW_FOR);
+    });
+  }
+</script>

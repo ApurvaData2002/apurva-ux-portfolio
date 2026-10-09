@@ -3,8 +3,16 @@
 // Interaction=Hover: bubble to the right (desktop sidebar).
 // Interaction=Tap:   bubble drops below so it never covers the name (header).
 // Interaction=None:  static (the 0 in the 404).
-// Purely decorative: the name sits next to it, so the image has alt="" and the
-// whole thing is aria-hidden and never takes keyboard focus.
+// Decorative: the name sits next to it, so the image has alt="" and the avatar
+// itself is aria-hidden and never takes keyboard focus.
+//
+// Optional waving video: drop public/avatar-wave.mp4 (and optionally
+// public/avatar-wave.webm) into the project and it is picked up at build time.
+// The photo stays underneath and shows while the video is missing or loading,
+// and always when reduced motion is on. A looping video gets a pause button
+// (WCAG 2.2.2), the only focusable part of this component.
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import { Image } from 'astro:assets';
 import { resolveImage } from '../lib/images';
 import { site } from '../data/site';
@@ -15,35 +23,65 @@ interface Props {
   /** Optional CSS size when it changes per breakpoint, e.g. "var(--size-avatar-header)". */
   displaySize?: string;
   interaction?: 'hover' | 'tap' | 'none';
+  /** Override the auto-detected video, or pass false to never show one. */
+  video?: { mp4: string; webm?: string } | false;
   class?: string;
 }
 
-const { size, displaySize, interaction = 'hover', class: className } = Astro.props;
+const publicFile = (url: string) => existsSync(path.join(process.cwd(), 'public', url));
+const detected =
+  publicFile(site.avatarVideo.mp4) &&
+  ({ mp4: site.avatarVideo.mp4, webm: publicFile(site.avatarVideo.webm) ? site.avatarVideo.webm : undefined } as const);
+
+const { size, displaySize, interaction = 'hover', video: videoProp, class: className } = Astro.props;
+const video = videoProp === undefined ? (interaction === 'none' ? false : detected) : videoProp;
 const photo = resolveImage(site.avatar);
 ---
 
 <span
   class:list={['avatar-wave', `avatar-wave--${interaction}`, className]}
   style={`--avatar-size: ${displaySize ?? `${size}px`}`}
-  data-avatar-wave={interaction === 'none' ? undefined : interaction}
-  data-state="default"
-  aria-hidden="true"
 >
-  <Image
-    class="avatar-wave__photo"
-    src={photo}
-    alt=""
-    width={size}
-    height={size}
-    densities={[1, 2]}
-    loading="eager"
-  />
+  <span
+    class="avatar-wave__visual"
+    data-avatar-wave={interaction === 'none' ? undefined : interaction}
+    data-state="default"
+    aria-hidden="true"
+  >
+    <Image
+      class="avatar-wave__photo"
+      src={photo}
+      alt=""
+      width={size}
+      height={size}
+      densities={[1, 2]}
+      loading="eager"
+    />
+    {
+      video && (
+        <video class="avatar-wave__video" muted loop playsinline preload="none" disablepictureinpicture data-avatar-video>
+          {video.webm && <source src={video.webm} type="video/webm" />}
+          <source src={video.mp4} type="video/mp4" />
+        </video>
+      )
+    }
+    {
+      interaction !== 'none' && (
+        <span class="avatar-wave__bubble t-eyebrow">
+          <span class="avatar-wave__morse">···· ··</span>
+          <span class="avatar-wave__decoded">hi</span>
+        </span>
+      )
+    }
+  </span>
   {
-    interaction !== 'none' && (
-      <span class="avatar-wave__bubble t-eyebrow">
-        <span class="avatar-wave__morse">···· ··</span>
-        <span class="avatar-wave__decoded">hi</span>
-      </span>
+    video && (
+      <button class="avatar-wave__pause" type="button" aria-label="Pause avatar animation" hidden data-avatar-pause>
+        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+          <path class="avatar-wave__pause-icon" d="M3 2h2v8H3zM7 2h2v8H7z" fill="currentColor" />
+          <path class="avatar-wave__play-icon" d="M3 2l7 4-7 4z" fill="currentColor" />
+        </svg>
+      </button>
     )
   }
 </span>
@@ -57,15 +95,68 @@ const photo = resolveImage(site.avatar);
     height: var(--avatar-size);
   }
 
-  .avatar-wave[data-avatar-wave] {
+  .avatar-wave__visual {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .avatar-wave__visual[data-avatar-wave] {
     cursor: pointer;
   }
 
-  .avatar-wave__photo {
+  .avatar-wave__photo,
+  .avatar-wave__video {
     width: 100%;
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
+  }
+
+  .avatar-wave__video {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-out);
+  }
+
+  .avatar-wave__video[data-playing] {
+    opacity: 1;
+  }
+
+  /* Pause control: 20px dot on the avatar's edge, 44x44 hit area. */
+  .avatar-wave__pause {
+    position: absolute;
+    right: -6px;
+    bottom: -6px;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--action-primary);
+    color: var(--icon-on-action);
+  }
+
+  .avatar-wave__pause[hidden] {
+    display: none;
+  }
+
+  .avatar-wave__pause::before {
+    content: '';
+    position: absolute;
+    inset: -12px;
+  }
+
+  .avatar-wave__play-icon,
+  .avatar-wave__pause[data-paused] .avatar-wave__pause-icon {
+    display: none;
+  }
+
+  .avatar-wave__pause[data-paused] .avatar-wave__play-icon {
+    display: inline;
   }
 
   .avatar-wave__bubble {
@@ -151,5 +242,55 @@ const photo = resolveImage(site.avatar);
       }
       if (el.dataset.avatarWave === 'tap' || matchMedia('(hover: none)').matches) play(true);
     });
+  }
+
+  // Waving video: only plays when visible and when reduced motion is off.
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+  for (const video of document.querySelectorAll<HTMLVideoElement>('[data-avatar-video]')) {
+    const root = video.closest('.avatar-wave');
+    const pause = root?.querySelector<HTMLButtonElement>('[data-avatar-pause]');
+    let userPaused = false;
+
+    const setPaused = (paused: boolean) => {
+      if (!pause) return;
+      pause.toggleAttribute('data-paused', paused);
+      pause.setAttribute('aria-label', paused ? 'Play avatar animation' : 'Pause avatar animation');
+    };
+
+    const start = () => {
+      if (reduceMotion.matches || userPaused || video.offsetParent === null) return;
+      video.play().catch(() => {
+        /* missing file or autoplay blocked: the photo stays */
+      });
+    };
+
+    video.addEventListener('playing', () => {
+      video.dataset.playing = '';
+      // A loop that runs longer than 5 seconds needs a pause control.
+      if (pause) pause.hidden = false;
+      setPaused(false);
+    });
+    video.addEventListener('pause', () => setPaused(true));
+
+    pause?.addEventListener('click', () => {
+      if (video.paused) {
+        userPaused = false;
+        start();
+      } else {
+        userPaused = true;
+        video.pause();
+      }
+    });
+
+    reduceMotion.addEventListener('change', () => {
+      if (reduceMotion.matches) {
+        video.pause();
+        delete video.dataset.playing;
+        if (pause) pause.hidden = true;
+      } else start();
+    });
+
+    start();
   }
 </script>

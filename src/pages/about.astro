@@ -1,8 +1,144 @@
 ---
+// About. Text lives in src/data/about.ts.
 import BaseLayout from '../layouts/BaseLayout.astro';
+import CaseImage from '../components/CaseImage.astro';
+import Divider from '../components/Divider.astro';
+import { about } from '../data/about';
+import { site } from '../data/site';
 ---
 
-<BaseLayout title="About" active="about">
-  <h1 class="t-h1">Hello there, I’m Apurva Singh.</h1>
-  <p class="t-body">About page content arrives in phase 5.</p>
+<BaseLayout title="About" active="about" image={about.poster.src}>
+  <div class="about">
+    <div class="about__bio-row">
+      <div class="about__text">
+        <h1 class="t-h1">{about.heading}</h1>
+        <div class="about__body t-body">
+          {about.bio.map((p) => <p>{p}</p>)}
+          <p>
+            {about.contactLead}{' '}
+            <a class="about__email" href={`mailto:${site.email}`}>{site.email}</a>
+          </p>
+        </div>
+      </div>
+      <div class="about__poster">
+        <CaseImage
+          src={about.poster.src}
+          alt={about.poster.alt}
+          widths={[360, 488, 720, 976, 1373]}
+          sizes="(min-width: 64em) min(488px, calc((100vw - 464px) / 2)), (min-width: 48em) calc((100vw - 96px) / 2), calc(100vw - 32px)"
+          loading="eager"
+        />
+      </div>
+    </div>
+
+    <Divider />
+
+    <div class="about__resume">
+      {
+        about.resume.map((col) => (
+          <section class="about__col" aria-labelledby={`resume-${col.heading.toLowerCase()}`}>
+            <h2 id={`resume-${col.heading.toLowerCase()}`} class="t-h2">
+              {col.heading}
+            </h2>
+            <ul class:list={['about__list', 't-body', { 'about__list--spaced': col.spaced }]} role="list">
+              {col.items.map((item) => (
+                <li>
+                  {item.lines.map((line, i) => (
+                    <>
+                      {i > 0 && <br />}
+                      {line}
+                    </>
+                  ))}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+  </div>
 </BaseLayout>
+
+<style>
+  .about {
+    display: flex;
+    flex-direction: column;
+    gap: var(--page-stack-gap);
+    color: var(--text-primary);
+  }
+
+  .about__bio-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--page-stack-gap);
+  }
+
+  @media (min-width: 48em) {
+    .about__bio-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+  }
+
+  .about__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .about__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+  }
+
+  /* A real link, so it is underlined to stand apart from the text around it. */
+  .about__email {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  /* Poster box: 488x648, 336x448, 361x480 in the frames (3:4) */
+  .about__poster {
+    aspect-ratio: 488 / 648;
+    overflow: hidden;
+  }
+
+  .about__resume {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-24);
+  }
+
+  @media (min-width: 48em) {
+    .about__resume {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-32);
+    }
+  }
+
+  @media (min-width: 64em) {
+    .about__resume {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--meta-col-gap);
+    }
+  }
+
+  .about__col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .about__list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .about__list--spaced {
+    gap: var(--space-16);
+  }
+</style>

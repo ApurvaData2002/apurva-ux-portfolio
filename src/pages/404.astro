@@ -1,8 +1,64 @@
 ---
+// 404. Astro builds this as 404.html; Vercel serves it for any unknown URL.
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Error404 from '../components/Error404.astro';
+import Button from '../components/Button.astro';
 ---
 
-<BaseLayout title="Page not found">
-  <h1 class="t-h1">Page not found</h1>
-  <p class="t-body">404 page content arrives in phase 5.</p>
+<BaseLayout title="Page not found" backToTop={false}>
+  <div class="not-found">
+    <div class="not-found__content">
+      <Error404 />
+      <div class="not-found__text">
+        <h1 class="t-h2">Page not found</h1>
+        <p class="t-lead not-found__lead">
+          This page doesn’t exist or has moved. Have a look at my projects, or read a bit about me.
+        </p>
+      </div>
+      <div class="not-found__actions">
+        <Button href="/">Projects</Button>
+        <Button href="/about" variant="secondary">About</Button>
+      </div>
+    </div>
+  </div>
 </BaseLayout>
+
+<style>
+  /* Centred in the space below the header (Figma: main-content align=center). */
+  .not-found {
+    --header-offset: var(--layout-header-height);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(100svh - var(--header-offset) - var(--page-pad-top) - var(--page-pad-bottom));
+  }
+
+  @media (min-width: 64em) {
+    .not-found {
+      --header-offset: 0px;
+    }
+  }
+
+  .not-found__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--page-stack-gap);
+  }
+
+  .not-found__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+    max-width: 480px;
+  }
+
+  .not-found__lead {
+    color: var(--text-muted);
+  }
+
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+  }
+</style>

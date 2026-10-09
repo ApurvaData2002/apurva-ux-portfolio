@@ -1,0 +1,54 @@
+---
+// Figma: Button (Variant=Primary | Secondary; State=Default | Hover | Focus).
+// 48px pill. Renders a link when href is given, otherwise a <button>.
+interface Props {
+  variant?: 'primary' | 'secondary';
+  href?: string;
+  type?: 'button' | 'submit';
+  class?: string;
+}
+
+const { variant = 'primary', href, type = 'button', class: className } = Astro.props;
+const classes = ['button', `button--${variant}`, 't-button', className];
+---
+
+{
+  href ? (
+    <a class:list={classes} href={href}>
+      <slot />
+    </a>
+  ) : (
+    <button class:list={classes} type={type}>
+      <slot />
+    </button>
+  )
+}
+
+<style>
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding-inline: var(--space-24);
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+    transition:
+      background-color var(--duration-base) var(--ease-out),
+      color var(--duration-base) var(--ease-out);
+  }
+
+  .button--primary {
+    background: var(--action-primary);
+    color: var(--text-on-action);
+  }
+
+  .button--primary:hover {
+    background: var(--action-primary-hover);
+  }
+
+  .button--secondary {
+    border: 1px solid var(--action-primary);
+    color: var(--text-accent);
+  }
+</style>

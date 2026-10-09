@@ -18,6 +18,8 @@ interface Props {
   spacing?: 'index' | 'page';
   /** Social preview image, a path under public/ such as "/case-studies/spunk/hero.png". */
   image?: string;
+  /** Show BackToTop at the end of the page (off on the 404, which fits on one screen). */
+  backToTop?: boolean;
 }
 
 const {
@@ -26,7 +28,9 @@ const {
   active,
   spacing = 'page',
   image,
+  backToTop = true,
 } = Astro.props;
+const hasFooter = backToTop || Astro.slots.has('footer');
 
 const fullTitle = title ? `${title} | ${site.name}` : `${site.name}, ${site.role}`;
 // Absolute URLs need a known domain. Astro.site is set from the environment
@@ -61,12 +65,18 @@ const ogImage = Astro.site && image ? new URL(image, Astro.site).href : undefine
       <main id="main" tabindex="-1">
         <slot />
       </main>
-      <footer id="site-footer" class="page__footer">
-        <slot name="footer" />
-        <div class="page__end">
-          <BackToTop />
-        </div>
-      </footer>
+      {
+        hasFooter && (
+          <footer id="site-footer" class="page__footer">
+            <slot name="footer" />
+            {backToTop && (
+              <div class="page__end">
+                <BackToTop />
+              </div>
+            )}
+          </footer>
+        )
+      }
     </div>
   </body>
 </html>

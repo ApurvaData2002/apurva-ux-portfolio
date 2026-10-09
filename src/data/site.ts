@@ -7,6 +7,8 @@ export const site = {
   email: 'sapurva523@gmail.com',
   linkedin: 'https://www.linkedin.com/in/apurva-singh-2002',
   avatar: '/avatar.jpg',
+  /** Optional waving video. Add these files to public/ and the avatar uses them automatically. */
+  avatarVideo: { mp4: '/avatar-wave.mp4', webm: '/avatar-wave.webm' },
 } as const;
 
 export type NavKey = 'projects' | 'about';
