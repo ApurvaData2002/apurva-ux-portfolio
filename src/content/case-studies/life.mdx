@@ -1,0 +1,71 @@
+---
+title: "Life: School canteen, uniform and supplies"
+slug: life
+summary: "A parent app for a school’s canteen, uniform shop and supplies. I designed the canteen ordering flow and the Uniform and Supplies tabs, along with the sheets and pop-overs that sit on top of them."
+meta: "Mobile app · 2026"
+order: 2
+# Hidden until publishing is approved. Set to false to show it on the site.
+draft: true
+hero: /case-studies/life/hero.png
+heroAlt: "Three Life app screens for Bayside Primary School: the canteen menu with meal times and an allergen filter, the uniform shop, and the supplies tab with booklist packs."
+thumbnail: /case-studies/life/hero.png
+roles:
+  - label: "My role"
+    text: "Junior UI/UX designer working under a senior designer. I designed the canteen menu with its date, child, allergen and item sheets, plus the Uniform and Supplies tabs, and prototyped the interactions."
+  - label: "Team & context"
+    text: "Senior designer (lead, owns the team library) and me. Client project for the Australian market, 2026."
+  - label: "Tools"
+    text: "Figma: variables, interactive components and prototyping, built on the shared team library (Top Bar, Menu List, Meal Card)."
+sections:
+  - eyebrow: "Problem"
+    heading: "Food, uniform and books for each child"
+    layout: stacked
+    paragraphs:
+      - "Parents use Life to order canteen meals, buy uniform and get school supplies for each of their children. Every child has their own allergies, year level and size."
+      - "Meals are ordered ahead of time. For each one, parents pick the day, the meal service (breakfast, snacks, lunch or dinner) and dishes that are safe for that child, and every meal has its own cut-off."
+      - "The brief was to keep all three quick for families with more than one child, and to make it hard to order something a child is allergic to by accident."
+  - eyebrow: "Constraints"
+    heading: "Rules set by the school and the canteen"
+    layout: split
+    paragraphs:
+      - "The week runs Monday to Sunday. The canteen publishes next week’s menu before the week starts, and parents order for that week only."
+      - "Orders can be edited or cancelled until 2 hours before each meal. Allergies are verified by the school and shown read-only in the app."
+      - "The school required “may contain” dishes to stay visible on the menu, so the filter only hides dishes that actually contain a child’s allergens."
+  - eyebrow: "Insights"
+    heading: "Allergens hidden by default"
+    layout: stacked
+    paragraphs:
+      - "Allergy data comes from the school, so the app hides dishes with a child’s allergens by default, both when the canteen opens and when a parent switches child."
+      - "Date and meal time are shared context that carries over between children; allergen and diet filters belong to each child."
+      - "If filtering removes every dish in a section, the section title stays on screen with “No item available”, so the menu keeps its structure."
+  - eyebrow: "Canteen decisions"
+    heading: "Only let parents pick what they can order"
+    layout: split
+    paragraphs:
+      - "The date picker stays a familiar month grid. Past days and weeks beyond the orderable week are visible but unselectable, and markers show days that already have meals scheduled."
+      - "The child selector shows photo, name, class and allergies at a glance, so parents confirm who they’re ordering for before choosing food."
+      - "Dishes with allergens open an acknowledgement sheet first, where parents tick and sign (or type their name). Wraps, panini and smoothies then open a customisation sheet, and everything else opens a simpler one."
+  - eyebrow: "Uniform"
+    heading: "One uniform list for every child, with a choice of fit"
+    layout: split
+    paragraphs:
+      - "The school’s record of each child’s year decides which uniform is shown, and the app suggests a size. I removed the Boys / Girls / Unisex filter, so every child sees the full uniform for their year."
+      - "I made that call because of new advisories for schools, and for ethical reasons. Instead of sorting clothes by gender, each item has a Fit choice: Relaxed, with more room to move, or Tailored, a closer cut in the same sizes."
+      - "Parents can still pick a different size for a taller or heavier child, and the school’s dress code is one tap away in a Uniform Policy pop-over."
+  - eyebrow: "Supplies"
+    heading: "A booklist pop-over for each school year"
+    layout: stacked
+    paragraphs:
+      - "The main decision in Supplies was the booklist pop-over. It shows the child’s booklists for their school: this year’s list is selected and can be ordered any time, and next year’s list stays disabled until it opens."
+      - "The same pop-over lists what parents need to supply themselves, links to the school’s booklist PDF, and gives parents a contact if the year level looks wrong."
+      - "The booklist pack opens as a sheet with every item ticked, so parents can untick anything their child already has."
+  - eyebrow: "Outcome"
+    heading: "What I took away"
+    layout: stacked
+    paragraphs:
+      - "The work went to the senior designer for review, flow by flow. Working inside a shared library taught me to use the owner’s components rather than local copies, and to write down prototype gotchas so the whole team avoids them."
+      - "The biggest lesson for me was how much of the safety work sits in the defaults, in what the menu shows before a parent touches anything."
+galleryHeading: "Sheets, pop-overs and states"
+gallery: []
+next: spunk
+---

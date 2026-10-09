@@ -1,0 +1,31 @@
+---
+// Figma: CursorView. The "View" pill that follows the pointer over a project
+// tile on desktop. Pointer-only decoration: aria-hidden, never focusable.
+import Icon from './Icon.astro';
+
+interface Props {
+  label?: string;
+  class?: string;
+}
+
+const { label = 'View case study', class: className } = Astro.props;
+---
+
+<span class:list={['cursor-view', className]} aria-hidden="true">
+  <span class="t-eyebrow">{label}</span>
+  <Icon name="next" size={16} />
+</span>
+
+<style>
+  .cursor-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: var(--space-8) var(--space-16);
+    border-radius: var(--radius-pill);
+    background: var(--action-primary);
+    color: var(--text-on-action);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+</style>

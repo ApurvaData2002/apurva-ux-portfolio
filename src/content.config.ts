@@ -37,7 +37,10 @@ const caseStudies = defineCollection({
   // Files starting with "_" (like _template.mdx) are ignored.
   loader: glob({ pattern: '**/[^_]*.mdx', base: './src/content/case-studies' }),
   schema: z.object({
+    /** Page title (the H1). */
     title: z.string(),
+    /** Optional shorter title for the homepage tile and "Next project" link. Defaults to title. */
+    cardTitle: z.string().optional(),
     slug: z.string().regex(/^[a-z0-9-]+$/, 'Lowercase letters, numbers and hyphens only.'),
     /** Intro paragraph under the title. */
     summary: z.string(),

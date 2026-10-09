@@ -1,0 +1,159 @@
+---
+// Figma: ProjectTile (Breakpoint=Desktop | Tablet | Mobile, State=Default | Hover | Focus).
+// One link per tile. Its accessible name is the title; the meta ("Mobile app · 2026")
+// is its description. The thumbnail is decorative (alt="") because the title names it.
+// Desktop hover: image zooms 5% and the CursorView pill follows the pointer.
+import { Picture } from 'astro:assets';
+import CursorView from './CursorView.astro';
+import { resolveImage } from '../lib/images';
+import type { CaseStudy } from '../lib/case-studies';
+
+interface Props {
+  entry: CaseStudy;
+  /** Load the image straight away (tiles in the first row). */
+  eager?: boolean;
+}
+
+const { entry, eager = false } = Astro.props;
+const { slug, title, cardTitle, meta, thumbnail } = entry.data;
+const titleId = `tile-${slug}-title`;
+const metaId = `tile-${slug}-meta`;
+---
+
+<a
+  class="tile"
+  href={`/case-studies/${slug}`}
+  aria-labelledby={titleId}
+  aria-describedby={metaId}
+  data-tile
+>
+  <span class="tile__thumb">
+    <Picture
+      class="tile__img"
+      src={resolveImage(thumbnail)}
+      alt=""
+      formats={['avif', 'webp']}
+      widths={[400, 720, 1080]}
+      sizes="(min-width: 64em) min(540px, calc((100vw - 360px) / 2)), (min-width: 48em) calc((100vw - 96px) / 2), calc(100vw - 32px)"
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : 'auto'}
+    />
+    <CursorView class="tile__cursor" />
+  </span>
+  <span class="tile__caption">
+    <span id={titleId} class="t-caption tile__title">{cardTitle ?? title}</span>
+    <span id={metaId} class="t-small tile__meta">{meta}</span>
+  </span>
+</a>
+
+<style>
+  .tile {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface-page);
+    color: var(--text-primary);
+  }
+
+  .tile__thumb {
+    position: relative;
+    display: block;
+    /* Thumbnail boxes from the Figma tiles: 361x200, 336x192, 540x304 */
+    aspect-ratio: 361 / 200;
+    overflow: hidden;
+    background: var(--surface-placeholder);
+    /* lets the pill centre itself with cqw/cqh units */
+    container-type: size;
+  }
+
+  @media (min-width: 48em) {
+    .tile__thumb {
+      aspect-ratio: 336 / 192;
+    }
+  }
+
+  @media (min-width: 64em) {
+    .tile__thumb {
+      aspect-ratio: 540 / 304;
+    }
+  }
+
+  .tile__thumb :global(picture),
+  .tile__thumb :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .tile__thumb :global(img) {
+    object-fit: cover;
+    transition: transform var(--duration-tile) var(--ease-out);
+  }
+
+  .tile__caption {
+    display: flex;
+    align-items: center;
+    gap: var(--space-16);
+    padding: var(--space-8);
+  }
+
+  .tile__title {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .tile__meta {
+    flex: none;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  /* The pill sits centred until the pointer moves it (see script). */
+  .tile__thumb :global(.tile__cursor) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(calc(var(--x, 50cqw) - 50%), calc(var(--y, 50cqh) - 50%));
+    opacity: 0;
+    transition: opacity var(--duration-tile) var(--ease-out);
+  }
+
+  /* Hover only on devices with a real pointer (Figma: tablet/mobile have no hover). */
+  @media (hover: hover) and (pointer: fine) {
+    .tile:hover .tile__thumb :global(img) {
+      transform: scale(1.05);
+    }
+
+    .tile:hover .tile__thumb :global(.tile__cursor) {
+      opacity: 1;
+    }
+
+    .tile[data-following] .tile__thumb {
+      cursor: none;
+    }
+  }
+</style>
+
+<script>
+  // Move the "View" pill with the pointer. Skipped with reduced motion
+  // (the pill then stays centred) and on touch screens.
+  const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+  for (const tile of document.querySelectorAll<HTMLElement>('[data-tile]')) {
+    const thumb = tile.querySelector<HTMLElement>('.tile__thumb');
+    if (!thumb) continue;
+
+    thumb.addEventListener('pointermove', (e) => {
+      if (!finePointer.matches || reduceMotion.matches || e.pointerType !== 'mouse') return;
+      const box = thumb.getBoundingClientRect();
+      thumb.style.setProperty('--x', `${e.clientX - box.left}px`);
+      thumb.style.setProperty('--y', `${e.clientY - box.top}px`);
+      tile.dataset.following = '';
+    });
+
+    thumb.addEventListener('pointerleave', () => {
+      thumb.style.removeProperty('--x');
+      thumb.style.removeProperty('--y');
+      delete tile.dataset.following;
+    });
+  }
+</script>

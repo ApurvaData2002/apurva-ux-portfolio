@@ -1,5 +1,6 @@
 import type { AstroIntegration } from 'astro';
-import { readdir, readFile, rm } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { readdir, readFile, rm, stat } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -23,8 +24,29 @@ export default function draftGuard(): AstroIntegration {
         const drafts = await findDrafts(contentDir);
         if (drafts.length === 0) return;
 
+        const publicDir = fileURLToPath(new URL('public/case-studies/', root));
+        const draftHashes = new Map<number, Set<string>>(); // file size -> content hashes
         for (const slug of drafts) {
           await rm(path.join(outDir, 'case-studies', slug), { recursive: true, force: true });
+          for (const file of await listFiles(path.join(publicDir, slug)).catch(() => [] as string[])) {
+            const bytes = await readFile(file);
+            const set = draftHashes.get(bytes.length) ?? new Set<string>();
+            set.add(sha256(bytes));
+            draftHashes.set(bytes.length, set);
+          }
+        }
+
+        // Images are glob-imported (src/lib/images.ts), so Vite also emits draft
+        // originals under hashed names in _astro/. Remove any byte-identical copy.
+        const outFiles = await listFiles(outDir);
+        let removed = 0;
+        for (const file of outFiles) {
+          const { size } = await stat(file);
+          const hashes = draftHashes.get(size);
+          if (hashes?.has(sha256(await readFile(file)))) {
+            await rm(file);
+            removed++;
+          }
         }
 
         const leaks: string[] = [];
@@ -38,7 +60,7 @@ export default function draftGuard(): AstroIntegration {
         if (leaks.length) {
           throw new Error(`Draft case studies are linked from the built site:\n  ${leaks.join('\n  ')}`);
         }
-        logger.info(`Drafts kept out of the build: ${drafts.join(', ')}`);
+        logger.info(`Drafts kept out of the build: ${drafts.join(', ')} (${removed} stray image file(s) removed)`);
       },
     },
   };
@@ -55,6 +77,10 @@ async function findDrafts(contentDir: string): Promise<string[]> {
     drafts.push(slug ?? name.replace(/\.mdx$/, ''));
   }
   return drafts;
+}
+
+function sha256(bytes: Uint8Array): string {
+  return createHash('sha256').update(bytes).digest('hex');
 }
 
 async function listFiles(dir: string): Promise<string[]> {

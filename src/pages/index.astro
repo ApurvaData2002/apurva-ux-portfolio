@@ -1,8 +1,40 @@
 ---
+// Home: the project grid, generated from the case-study collection.
+// Drafts are left out; order comes from each case study's `order` field.
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectTile from '../components/ProjectTile.astro';
+import { getPublishedCaseStudies } from '../lib/case-studies';
+
+const caseStudies = await getPublishedCaseStudies();
 ---
 
 <BaseLayout active="projects" spacing="index">
   <h1 class="sr-only">Projects</h1>
-  <p class="t-body">Project grid arrives in phase 3.</p>
+  {
+    caseStudies.length > 0 ? (
+      <ul class="projects-grid" role="list">
+        {caseStudies.map((entry, i) => (
+          <li>
+            <ProjectTile entry={entry} eager={i < 2} />
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="t-body">New case studies are on their way.</p>
+    )
+  }
 </BaseLayout>
+
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--index-grid-gap);
+  }
+
+  @media (min-width: 48em) {
+    .projects-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>
