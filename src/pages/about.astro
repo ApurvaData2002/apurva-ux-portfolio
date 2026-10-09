@@ -36,7 +36,7 @@ import { site } from '../data/site';
     <div class="about__resume">
       {
         about.resume.map((col) => (
-          <section class="about__col" aria-labelledby={`resume-${col.heading.toLowerCase()}`}>
+          <section class="about__col">
             <h2 id={`resume-${col.heading.toLowerCase()}`} class="t-h2">
               {col.heading}
             </h2>

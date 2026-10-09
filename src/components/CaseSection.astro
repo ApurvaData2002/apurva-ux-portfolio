@@ -23,7 +23,7 @@ const id = `section-${String(number).padStart(2, '0')}`;
 const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
 ---
 
-<section class:list={['case-section', `case-section--${layout}`, { 'case-section--has-image': image }]} aria-labelledby={id}>
+<section class:list={['case-section', `case-section--${layout}`, { 'case-section--has-image': image }]}>
   <div class="case-section__text">
     <p class="t-eyebrow case-section__eyebrow">{String(number).padStart(2, '0')} · {eyebrow}</p>
     <h2 id={id} class="t-h2">{heading}</h2>

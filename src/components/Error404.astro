@@ -41,6 +41,11 @@ import AvatarWave from './AvatarWave.astro';
     gap: var(--space-8);
   }
 
+  /* Display digits never outgrow a 320px screen, even with text at 200%. */
+  .error-404__digits .t-display {
+    font-size: min(var(--type-display-size), 28vw);
+  }
+
   .error-404__morse {
     color: var(--text-accent);
     white-space: nowrap;

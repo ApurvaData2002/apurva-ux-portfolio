@@ -14,7 +14,7 @@ const { number, heading, images } = Astro.props;
 const id = 'gallery-heading';
 ---
 
-<section class="gallery" aria-labelledby={id}>
+<section class="gallery">
   <div class="gallery__text">
     <p class="t-eyebrow gallery__eyebrow">{String(number).padStart(2, '0')} · Process</p>
     <h2 id={id} class="t-h2">{heading}</h2>

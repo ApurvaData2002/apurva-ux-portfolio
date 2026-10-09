@@ -1,7 +1,7 @@
 ---
 // Figma: ProjectTile (Breakpoint=Desktop | Tablet | Mobile, State=Default | Hover | Focus).
-// One link per tile. Its accessible name is the title; the meta ("Mobile app · 2026")
-// is its description. The thumbnail is decorative (alt="") because the title names it.
+// One link per tile. Its accessible name is the title (the meta and the View pill
+// are aria-hidden); the meta ("Mobile app · 2026") is read as its description. The thumbnail is decorative (alt="") because the title names it.
 // Desktop hover: image zooms 5% and the CursorView pill follows the pointer.
 import { Picture } from 'astro:assets';
 import CursorView from './CursorView.astro';
@@ -16,17 +16,10 @@ interface Props {
 
 const { entry, eager = false } = Astro.props;
 const { slug, title, cardTitle, meta, thumbnail } = entry.data;
-const titleId = `tile-${slug}-title`;
 const metaId = `tile-${slug}-meta`;
 ---
 
-<a
-  class="tile"
-  href={`/case-studies/${slug}`}
-  aria-labelledby={titleId}
-  aria-describedby={metaId}
-  data-tile
->
+<a class="tile" href={`/case-studies/${slug}`} aria-describedby={metaId} data-tile>
   <span class="tile__thumb">
     <Picture
       class="tile__img"
@@ -41,8 +34,10 @@ const metaId = `tile-${slug}-meta`;
     <CursorView class="tile__cursor" />
   </span>
   <span class="tile__caption">
-    <span id={titleId} class="t-caption tile__title">{cardTitle ?? title}</span>
-    <span id={metaId} class="t-small tile__meta">{meta}</span>
+    <span class="t-caption tile__title">{cardTitle ?? title}</span>
+    {/* The link's name comes from its content. aria-hidden leaves only the title in it
+        (WCAG 2.5.3 label in name); aria-describedby still reads the meta after it. */}
+    <span id={metaId} class="t-small tile__meta" aria-hidden="true">{meta}</span>
   </span>
 </a>
 
