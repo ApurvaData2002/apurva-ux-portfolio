@@ -20,6 +20,8 @@ interface Props {
   image?: string;
   /** Show BackToTop at the end of the page (off on the 404, which fits on one screen). */
   backToTop?: boolean;
+  /** Keep the page out of search results (the 404). */
+  noindex?: boolean;
 }
 
 const {
@@ -29,13 +31,17 @@ const {
   spacing = 'page',
   image,
   backToTop = true,
+  noindex = false,
 } = Astro.props;
 const hasFooter = backToTop || Astro.slots.has('footer');
 
 const fullTitle = title ? `${title} | ${site.name}` : `${site.name}, ${site.role}`;
 // Absolute URLs need a known domain. Astro.site is set from the environment
 // (see astro.config.mjs), so nothing here hard-codes a domain.
-const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+// URLs have no trailing slash ("/about", not "/about/"), matching the site's links
+// and the redirect in vercel.json.
+const path = Astro.url.pathname.length > 1 ? Astro.url.pathname.replace(/\/+$/, '') : '/';
+const canonical = Astro.site && !noindex ? new URL(path, Astro.site).href : undefined;
 const ogImage = Astro.site && image ? new URL(image, Astro.site).href : undefined;
 ---
 
@@ -51,6 +57,7 @@ const ogImage = Astro.site && image ? new URL(image, Astro.site).href : undefine
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
     {canonical && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex" />}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
