@@ -1,0 +1,105 @@
+---
+# ─────────────────────────────────────────────────────────────────────────────
+# NEW CASE STUDY TEMPLATE
+# 1. Copy this file and rename the copy to your-slug.mdx (lowercase, hyphens),
+#    e.g. "food-delivery.mdx". Files starting with "_" are ignored by the site.
+# 2. Put the images in public/case-studies/your-slug/ (names below).
+# 3. Fill in every field. Lines starting with "#" are notes; you can delete them.
+# 4. Keep draft: true until it is ready, then set it to false.
+# House style: no em dashes. Use a comma, colon or full stop instead.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Page title, shown as the big heading (H1) on the case study.
+title: "Project name: What it is"
+
+# Optional. Shorter title for the homepage tile and the "Next project" link.
+# Delete this line to use the title above.
+cardTitle: "Project name: Short version"
+
+# Must match the file name (without .mdx) and the image folder name.
+slug: your-slug
+
+# One or two sentences under the title.
+summary: "What the product is, and what you designed."
+
+# Small grey text on the homepage tile.
+meta: "Mobile app · 2026"
+
+# Position on the homepage: 1 comes first. Renumber the others if needed.
+order: 3
+
+# true = hidden everywhere on the live site. false = published.
+draft: true
+
+# Main image under the summary. 16:9, exported at 2x (2016 x 1136).
+hero: /case-studies/your-slug/hero.png
+# Describe what the screens show, as if to someone who cannot see them.
+heroAlt: "Three app screens: the home screen, the search results and the checkout."
+
+# Homepage tile image. Usually the same file as the hero.
+thumbnail: /case-studies/your-slug/hero.png
+
+# The three columns under the hero. Add or remove items as you like.
+roles:
+  - label: "My role"
+    text: "What you did."
+  - label: "Team & context"
+    text: "Who you worked with, client, market, year."
+  - label: "Tools"
+    text: "Figma, and anything else."
+
+# The story, one block per section, in order. Add or remove sections freely:
+# numbering ("01 · Problem") is added automatically.
+#
+# layout: stacked = text, then a full-width 16:9 image underneath.
+# layout: split   = text on the left, a 4:3 image on the right (on phones the
+#                   imageMobile, a 16:9 "wide" version, is shown instead).
+# Sections without an image: leave out image, imageMobile and alt.
+sections:
+  - eyebrow: "Problem"
+    heading: "The question this project had to answer"
+    layout: stacked
+    paragraphs:
+      - "First paragraph."
+      - "Second paragraph."
+
+  - eyebrow: "Constraints"
+    heading: "A section with a side-by-side image"
+    layout: split
+    image: /case-studies/your-slug/section-02.png
+    imageMobile: /case-studies/your-slug/section-02-wide.png
+    alt: "Two screens: what the first one shows, and what the second one shows."
+    paragraphs:
+      - "First paragraph."
+      - "Second paragraph."
+
+  - eyebrow: "Insights"
+    heading: "A section with a full-width image"
+    layout: stacked
+    image: /case-studies/your-slug/section-03.png
+    alt: "Describe the screens and what they show."
+    paragraphs:
+      - "First paragraph."
+
+  - eyebrow: "Outcome"
+    heading: "What I took away"
+    layout: stacked
+    paragraphs:
+      - "First paragraph."
+
+# Heading over the image grid at the end ("Process" is added above it with the
+# next number). Delete both gallery fields to leave the grid out.
+galleryHeading: "Flows, states and components"
+# Square images (1:1), exported at 2x (640 x 640). Six fills two rows.
+gallery:
+  - src: /case-studies/your-slug/gallery-01.png
+    alt: "What this screen shows."
+  - src: /case-studies/your-slug/gallery-02.png
+    alt: "What this screen shows."
+  - src: /case-studies/your-slug/gallery-03.png
+    alt: "What this screen shows."
+
+# Slug of the case study linked at the bottom ("Next project").
+# Drafts are skipped automatically.
+next: spunk
+---
