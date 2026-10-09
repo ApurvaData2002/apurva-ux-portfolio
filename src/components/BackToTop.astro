@@ -1,0 +1,78 @@
+---
+// Figma: BackToTop (Size=Large 48px on tablet/desktop, Size=Small 40px on mobile;
+// State=Default | Hover | Focus). Sits at the end of the page. Links to #top, so it
+// works without JavaScript; the script adds smooth scrolling (unless reduced
+// motion is on) and moves focus back to the top of the page.
+---
+
+<a class="back-to-top" href="#top" aria-label="Back to top" data-back-to-top>
+  <svg class="back-to-top__arrow back-to-top__arrow--large" width="48" height="48" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+    <path d="M24 17L30.9282 27.5H17.0718L24 17Z" fill="currentColor" />
+  </svg>
+  <svg class="back-to-top__arrow back-to-top__arrow--small" width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+    <path d="M20 13L26.9282 23.5H13.0718L20 13Z" fill="currentColor" />
+  </svg>
+</a>
+
+<style>
+  .back-to-top {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--action-primary);
+    color: var(--icon-on-action);
+    transition: background-color var(--duration-base) var(--ease-out);
+  }
+
+  /* Small is 40px; extend the hit area to 44x44 without changing the look. */
+  .back-to-top::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+  }
+
+  .back-to-top:hover,
+  .back-to-top:focus-visible {
+    background: var(--action-primary-hover);
+  }
+
+  .back-to-top__arrow--large {
+    display: none;
+  }
+
+  @media (min-width: 48em) {
+    .back-to-top {
+      width: 48px;
+      height: 48px;
+    }
+
+    .back-to-top::before {
+      display: none;
+    }
+
+    .back-to-top__arrow--large {
+      display: block;
+    }
+
+    .back-to-top__arrow--small {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-back-to-top]')) {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+      document.getElementById('top')?.focus({ preventScroll: true });
+      history.replaceState(null, '', location.pathname + location.search);
+    });
+  }
+</script>

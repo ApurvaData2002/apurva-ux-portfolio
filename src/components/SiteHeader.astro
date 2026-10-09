@@ -1,0 +1,141 @@
+---
+// Figma: SiteHeader (Breakpoint=Tablet | Mobile, Menu=Closed | Open).
+// Sticky top bar below 1024px. The menu toggle opens MenuDrawer.
+import AvatarWave from './AvatarWave.astro';
+import Icon from './Icon.astro';
+import MenuDrawer from './MenuDrawer.astro';
+import { site, type NavKey } from '../data/site';
+
+interface Props {
+  active?: NavKey;
+}
+
+const { active } = Astro.props;
+const drawerId = 'menu-drawer';
+---
+
+<header class="site-header">
+  <div class="site-header__bar">
+    <div class="site-header__brand">
+      <AvatarWave size={40} displaySize="var(--size-avatar-header)" interaction="tap" />
+      <a class="site-header__name-block" href="/">
+        <span class="t-brand">{site.name}</span>
+        <span class="t-small site-header__role">{site.role}</span>
+      </a>
+    </div>
+    <button
+      class="site-header__toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls={drawerId}
+      aria-label="Open menu"
+      data-menu-toggle
+    >
+      <Icon name="menu" size={24} class="site-header__icon-menu" />
+      <Icon name="close" size={24} class="site-header__icon-close" />
+    </button>
+  </div>
+  <MenuDrawer id={drawerId} active={active} />
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  @media (min-width: 64em) {
+    .site-header {
+      display: none;
+    }
+  }
+
+  .site-header__bar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-16);
+    height: var(--layout-header-height);
+    padding-inline: var(--space-16);
+    background: var(--surface-page);
+    border-bottom: 1px solid var(--border-divider);
+  }
+
+  @media (min-width: 48em) {
+    .site-header__bar {
+      padding-inline: var(--space-32);
+    }
+  }
+
+  .site-header__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    min-width: 0;
+  }
+
+  .site-header__name-block {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .site-header__role {
+    color: var(--text-muted);
+  }
+
+  /* 44x44 hit area (Figma hit-area-44) around the 24px icon. */
+  .site-header__toggle {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    margin-inline-end: -10px;
+    color: var(--icon-default);
+    border-radius: 4px;
+  }
+
+  .site-header__toggle :global(.site-header__icon-close),
+  .site-header__toggle[aria-expanded='true'] :global(.site-header__icon-menu) {
+    display: none;
+  }
+
+  .site-header__toggle[aria-expanded='true'] :global(.site-header__icon-close) {
+    display: block;
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const drawer = toggle && document.getElementById(toggle.getAttribute('aria-controls') ?? '');
+
+  if (toggle && drawer) {
+    // While the drawer is open it covers the page, so make the page behind it inert.
+    const behind = () => document.querySelectorAll<HTMLElement>('#main, #site-footer');
+
+    const setOpen = (open: boolean, { returnFocus = false } = {}) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      drawer.hidden = !open;
+      document.documentElement.style.overflow = open ? 'hidden' : '';
+      behind().forEach((el) => (el.inert = open));
+      if (returnFocus) toggle.focus();
+    };
+
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !drawer.hidden) setOpen(false, { returnFocus: true });
+    });
+
+    // The drawer does not exist on desktop; close it if the window grows past 1024px.
+    matchMedia('(min-width: 64em)').addEventListener('change', (e) => {
+      if (e.matches && !drawer.hidden) setOpen(false);
+    });
+  }
+</script>

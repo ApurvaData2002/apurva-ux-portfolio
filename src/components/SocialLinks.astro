@@ -1,0 +1,62 @@
+---
+// Email + LinkedIn icon links (Figma: social-icons in NavSidebar and nav-drawer).
+// Each link is a 44x44 hit area (Figma hit-area-44) made with padding, so the
+// icon itself keeps its Figma size.
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+
+interface Props {
+  /** sidebar: 16px glyphs in 24px boxes. drawer: 24px glyphs. */
+  variant: 'sidebar' | 'drawer';
+}
+
+const { variant } = Astro.props;
+const firstName = site.name.split(' ')[0];
+const glyph = variant === 'drawer' ? 24 : 16;
+---
+
+<ul class:list={['social', `social--${variant}`]} role="list">
+  <li>
+    <a class="social__link" href={`mailto:${site.email}`} aria-label={`Email ${firstName}`}>
+      <Icon name="mail" size={glyph} />
+    </a>
+  </li>
+  <li>
+    <a
+      class="social__link"
+      href={site.linkedin}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${firstName} on LinkedIn (opens in new tab)`}
+    >
+      <Icon name="linkedin" size={glyph} />
+    </a>
+  </li>
+</ul>
+
+<style>
+  .social {
+    display: flex;
+    /* The 44px hit areas grow outward from the Figma icon box; pull them back so
+       the icons sit exactly where the design puts them. */
+    margin-block: calc((var(--box) - 44px) / 2);
+    margin-inline-start: calc((var(--box) - 44px) / 2);
+  }
+
+  .social--sidebar {
+    --box: 24px;
+  }
+
+  .social--drawer {
+    --box: 40px;
+  }
+
+  .social__link {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    color: var(--icon-default);
+    border-radius: 4px;
+  }
+</style>

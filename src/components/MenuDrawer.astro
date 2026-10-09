@@ -1,0 +1,43 @@
+---
+// Figma: SiteHeader Menu=Open (the nav-drawer under the header). Tablet/mobile only.
+// Opened and closed by the toggle in SiteHeader (see its script).
+import NavLinks from './NavLinks.astro';
+import SocialLinks from './SocialLinks.astro';
+import type { NavKey } from '../data/site';
+
+interface Props {
+  id: string;
+  active?: NavKey;
+}
+
+const { id, active } = Astro.props;
+---
+
+<div id={id} class="menu-drawer" hidden>
+  <NavLinks active={active} variant="drawer" />
+  <SocialLinks variant="drawer" />
+</div>
+
+<style>
+  .menu-drawer {
+    position: fixed;
+    inset: var(--layout-header-height) 0 0 0;
+    z-index: 19;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-64);
+    padding: var(--space-32) var(--space-16) var(--space-40);
+    overflow-y: auto;
+    background: var(--surface-subtle);
+  }
+
+  .menu-drawer[hidden] {
+    display: none;
+  }
+
+  @media (min-width: 48em) {
+    .menu-drawer {
+      padding: var(--space-48) var(--space-32);
+    }
+  }
+</style>

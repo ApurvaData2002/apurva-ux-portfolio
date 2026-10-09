@@ -1,0 +1,155 @@
+---
+// Figma: AvatarWave. Photo avatar with a Morse "hi" easter egg.
+// Interaction=Hover: bubble to the right (desktop sidebar).
+// Interaction=Tap:   bubble drops below so it never covers the name (header).
+// Interaction=None:  static (the 0 in the 404).
+// Purely decorative: the name sits next to it, so the image has alt="" and the
+// whole thing is aria-hidden and never takes keyboard focus.
+import { Image } from 'astro:assets';
+import { resolveImage } from '../lib/images';
+import { site } from '../data/site';
+
+interface Props {
+  /** Largest rendered size in px (sets the image resolution). */
+  size: number;
+  /** Optional CSS size when it changes per breakpoint, e.g. "var(--size-avatar-header)". */
+  displaySize?: string;
+  interaction?: 'hover' | 'tap' | 'none';
+  class?: string;
+}
+
+const { size, displaySize, interaction = 'hover', class: className } = Astro.props;
+const photo = resolveImage(site.avatar);
+---
+
+<span
+  class:list={['avatar-wave', `avatar-wave--${interaction}`, className]}
+  style={`--avatar-size: ${displaySize ?? `${size}px`}`}
+  data-avatar-wave={interaction === 'none' ? undefined : interaction}
+  data-state="default"
+  aria-hidden="true"
+>
+  <Image
+    class="avatar-wave__photo"
+    src={photo}
+    alt=""
+    width={size}
+    height={size}
+    densities={[1, 2]}
+    loading="eager"
+  />
+  {
+    interaction !== 'none' && (
+      <span class="avatar-wave__bubble t-eyebrow">
+        <span class="avatar-wave__morse">···· ··</span>
+        <span class="avatar-wave__decoded">hi</span>
+      </span>
+    )
+  }
+</span>
+
+<style>
+  .avatar-wave {
+    position: relative;
+    display: block;
+    flex: none;
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+  }
+
+  .avatar-wave[data-avatar-wave] {
+    cursor: pointer;
+  }
+
+  .avatar-wave__photo {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .avatar-wave__bubble {
+    position: absolute;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 64px;
+    padding: var(--space-8) var(--space-16);
+    background: var(--surface-page);
+    border: 1px solid var(--border-divider);
+    color: var(--text-primary);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .avatar-wave--hover .avatar-wave__bubble {
+    top: 50%;
+    left: calc(100% + var(--space-8));
+    transform: translateY(-50%);
+    border-radius: var(--radius-bubble) var(--radius-bubble) var(--radius-bubble) var(--radius-bubble-tail);
+  }
+
+  .avatar-wave--tap .avatar-wave__bubble {
+    top: calc(100% + 20px);
+    left: 0;
+    border-radius: var(--radius-bubble-tail) var(--radius-bubble) var(--radius-bubble) var(--radius-bubble);
+  }
+
+  .avatar-wave__decoded {
+    display: none;
+  }
+
+  [data-state='morse'] .avatar-wave__bubble,
+  [data-state='decoded'] .avatar-wave__bubble {
+    opacity: 1;
+  }
+
+  [data-state='decoded'] .avatar-wave__morse {
+    display: none;
+  }
+
+  [data-state='decoded'] .avatar-wave__decoded {
+    display: inline;
+  }
+</style>
+
+<script>
+  // Morse "···· ··" shows first, then decodes to "hi" (Figma prototype timings).
+  const DECODE_AFTER = 900;
+  const TAP_HIDE_AFTER = 1600;
+
+  for (const el of document.querySelectorAll<HTMLElement>('[data-avatar-wave]')) {
+    let timers: number[] = [];
+    const set = (state: string) => (el.dataset.state = state);
+    const clear = () => {
+      timers.forEach(clearTimeout);
+      timers = [];
+    };
+    const play = (autoHide: boolean) => {
+      clear();
+      set('morse');
+      timers.push(window.setTimeout(() => set('decoded'), DECODE_AFTER));
+      if (autoHide) timers.push(window.setTimeout(() => set('default'), DECODE_AFTER + TAP_HIDE_AFTER));
+    };
+
+    el.addEventListener('pointerenter', (e) => {
+      if (e.pointerType === 'mouse' && el.dataset.avatarWave === 'hover') play(false);
+    });
+    el.addEventListener('pointerleave', (e) => {
+      if (e.pointerType === 'mouse' && el.dataset.avatarWave === 'hover') {
+        clear();
+        set('default');
+      }
+    });
+    el.addEventListener('click', () => {
+      if (el.dataset.state !== 'default' && el.dataset.avatarWave === 'tap') {
+        clear();
+        set('default');
+        return;
+      }
+      if (el.dataset.avatarWave === 'tap' || matchMedia('(hover: none)').matches) play(true);
+    });
+  }
+</script>

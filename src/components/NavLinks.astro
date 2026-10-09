@@ -1,0 +1,59 @@
+---
+// Main navigation list, shared by NavSidebar (desktop) and MenuDrawer (tablet/mobile).
+// Active page: aria-current="page" + the sage dot (indicator/active, aria-hidden).
+import { navItems, type NavKey } from '../data/site';
+
+interface Props {
+  active?: NavKey;
+  variant: 'sidebar' | 'drawer';
+}
+
+const { active, variant } = Astro.props;
+---
+
+<nav aria-label="Main">
+  <ul class:list={['nav-links', `nav-links--${variant}`]} role="list">
+    {
+      navItems.map((item) => (
+        <li class="nav-links__item">
+          <a
+            class:list={['nav-links__link', variant === 'drawer' ? 't-nav-drawer' : 't-nav']}
+            href={item.href}
+            aria-current={item.key === active ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+          {item.key === active && <span class="nav-links__dot" aria-hidden="true" />}
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-links--drawer {
+    gap: var(--space-16);
+  }
+
+  .nav-links__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+  }
+
+  .nav-links__link {
+    color: var(--text-primary);
+  }
+
+  .nav-links__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--indicator-active);
+  }
+</style>

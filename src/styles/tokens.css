@@ -1,0 +1,203 @@
+/*
+ * Design tokens, taken from the Figma "📚 Library" page variables and text styles
+ * (file "personal-portfolio"). Names mirror the Figma variable paths:
+ * "surface/page" -> --surface-page, "type/h1/size" -> --type-h1-size.
+ *
+ * Breakpoints match the Figma frames and the Responsive collection modes:
+ *   Mobile  (mobile-393)   < 768px    default values below
+ *   Tablet  (tablet-768)   >= 768px   @media (min-width: 48em)
+ *   Desktop (desktop-1440) >= 1024px  @media (min-width: 64em)
+ * Media queries cannot read custom properties, so the 48em / 64em values are
+ * repeated wherever a component needs a breakpoint.
+ *
+ * Type sizes are in rem so text scales with the browser's font-size setting.
+ */
+
+:root {
+  /* ---- Color primitives (Color Primitives collection) ---- */
+  --sage-50: #fafaf7;
+  --sage-100: #f2f5ef;
+  --sage-200: #c7d3c1;
+  --sage-300: #a8b5a0;
+  --sage-500: #7a8b71;
+  --sage-600: #5b6b54;
+  --sage-700: #4a5845;
+  --sage-900: #232a21;
+
+  /* ---- Color semantic (Color collection, mode "Sage + Cream") ---- */
+  --surface-page: var(--sage-50);
+  --surface-subtle: var(--sage-100);
+  --surface-placeholder: var(--sage-200);
+  --border-divider: var(--sage-200);
+  --brand-mark: var(--sage-300);
+  --accent-primary: var(--sage-300); /* never put text on this (about 2:1) */
+  --icon-default: var(--sage-500);
+  --icon-on-media: var(--sage-50);
+  --icon-on-action: var(--sage-50);
+  --indicator-active: var(--sage-500);
+  --text-primary: var(--sage-900);
+  --text-muted: var(--sage-600);
+  --text-accent: var(--sage-700);
+  --text-on-action: var(--sage-50);
+  --action-primary: var(--sage-700);
+  --action-primary-hover: var(--sage-900);
+  --focus-ring: var(--sage-700);
+
+  /* ---- Spacing (Spacing collection, 8px grid) ---- */
+  --space-8: 8px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-80: 80px;
+  --space-96: 96px;
+  --space-144: 144px;
+
+  /* ---- Typography primitives (Typography collection) ---- */
+  --font-heading: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+
+  --size-12: 0.75rem;
+  --size-13: 0.8125rem;
+  --size-14: 0.875rem;
+  --size-16: 1rem;
+  --size-20: 1.25rem;
+  --size-24: 1.5rem;
+  --size-32: 2rem;
+  --size-40: 2.5rem;
+  --size-48: 3rem;
+  --size-64: 4rem;
+  --size-96: 6rem;
+  --size-120: 7.5rem;
+  --size-160: 10rem;
+
+  --leading-16: 1rem;
+  --leading-24: 1.5rem;
+  --leading-32: 2rem;
+  --leading-40: 2.5rem;
+  --leading-48: 3rem;
+  --leading-64: 4rem;
+  --leading-80: 5rem;
+  --leading-96: 6rem;
+  --leading-120: 7.5rem;
+  --leading-160: 10rem;
+
+  /* ---- Focus (focus/ring) ---- */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* ---- Shape (not variables in Figma; values read from the components) ---- */
+  --radius-pill: 999px;
+  --radius-bubble: 16px;
+  --radius-bubble-tail: 4px;
+
+  /* ---- Motion (Figma prototype timings) ---- */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-tile: 250ms;
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+
+  /* ---- Responsive (Responsive collection), Mobile mode ---- */
+  --page-pad-top: var(--space-24);
+  --page-pad-left: var(--space-16);
+  --page-pad-right: var(--space-16);
+  --page-pad-bottom: var(--space-48);
+  --page-stack-gap: var(--space-24);
+  --page-section-gap: var(--space-48);
+  --case-section-gap: var(--space-64);
+  --index-pad-y: var(--space-24);
+  --index-pad-x: var(--space-16);
+  --index-grid-gap: var(--space-24);
+  --gallery-gap: var(--space-8);
+  --meta-col-gap: var(--space-24);
+
+  --type-display-size: var(--size-96);
+  --type-display-line: var(--leading-96);
+  --type-h1-size: var(--size-24);
+  --type-h1-line: var(--leading-32);
+  --type-h2-size: var(--size-20);
+  --type-h2-line: var(--leading-32);
+  --type-h3-size: var(--size-14);
+  --type-h3-line: var(--leading-24);
+  --type-lead-size: var(--size-16);
+  --type-lead-line: var(--leading-24);
+  --type-body-size: var(--size-14);
+  --type-body-line: var(--leading-24);
+  --type-small-size: var(--size-12);
+  --type-small-line: var(--leading-16);
+  --type-eyebrow-size: var(--size-12);
+  --type-eyebrow-line: var(--leading-16);
+  --type-caption-size: var(--size-13);
+  --type-caption-line: var(--leading-24);
+  --type-nav-size: var(--size-14);
+  --type-nav-line: var(--leading-24);
+  --type-nav-drawer-size: var(--size-24);
+  --type-nav-drawer-line: var(--leading-32);
+  --type-brand-size: var(--size-16);
+  --type-brand-line: var(--leading-24);
+  --type-morse-size: var(--size-32);
+  --type-morse-line: var(--leading-40);
+
+  --size-avatar-404: 72px;
+  --layout-sidebar-width: 0px;
+  --layout-header-height: 56px;
+  --size-avatar-header: 32px;
+}
+
+/* Tablet mode */
+@media (min-width: 48em) {
+  :root {
+    --page-pad-top: var(--space-32);
+    --page-pad-left: var(--space-32);
+    --page-pad-right: var(--space-32);
+    --page-pad-bottom: var(--space-64);
+    --page-stack-gap: var(--space-32);
+    --page-section-gap: var(--space-64);
+    --case-section-gap: var(--space-80);
+    --index-pad-y: var(--space-32);
+    --index-pad-x: var(--space-32);
+    --index-grid-gap: var(--space-32);
+    --gallery-gap: var(--space-16);
+    --meta-col-gap: var(--space-32);
+
+    --type-display-size: var(--size-120);
+    --type-display-line: var(--leading-120);
+    --type-h1-size: var(--size-32);
+    --type-h1-line: var(--leading-40);
+    --type-morse-size: var(--size-40);
+    --type-morse-line: var(--leading-48);
+
+    --size-avatar-404: 88px;
+    --layout-header-height: 64px;
+    --size-avatar-header: 40px;
+  }
+}
+
+/* Desktop mode */
+@media (min-width: 64em) {
+  :root {
+    --page-pad-top: var(--space-64);
+    --page-pad-left: var(--space-48);
+    --page-pad-right: var(--space-144);
+    --page-pad-bottom: var(--space-96);
+    --page-section-gap: var(--space-80);
+    --case-section-gap: var(--space-96);
+    --index-pad-y: var(--space-40);
+    --index-pad-x: var(--space-40);
+    --index-grid-gap: var(--space-40);
+    --gallery-gap: var(--space-24);
+    --meta-col-gap: var(--space-80);
+
+    --type-display-size: var(--size-160);
+    --type-display-line: var(--leading-160);
+    --type-morse-size: var(--size-48);
+    --type-morse-line: var(--leading-64);
+
+    --size-avatar-404: 112px;
+    --layout-sidebar-width: 240px;
+  }
+}

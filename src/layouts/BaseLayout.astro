@@ -1,0 +1,101 @@
+---
+// Page shell used by every page: skip link, NavSidebar (desktop) or SiteHeader +
+// MenuDrawer (tablet/mobile), <main>, and a <footer> ending in BackToTop.
+import '../styles/global.css';
+import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import NavSidebar from '../components/NavSidebar.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import BackToTop from '../components/BackToTop.astro';
+import { site, type NavKey } from '../data/site';
+
+interface Props {
+  /** Page title. Leave empty on the homepage. */
+  title?: string;
+  description?: string;
+  /** Which nav item is the current page (omit for case studies and 404). */
+  active?: NavKey;
+  /** "index" uses the homepage grid padding, "page" the reading-page padding. */
+  spacing?: 'index' | 'page';
+  /** Social preview image, a path under public/ such as "/case-studies/spunk/hero.png". */
+  image?: string;
+}
+
+const {
+  title,
+  description = site.description,
+  active,
+  spacing = 'page',
+  image,
+} = Astro.props;
+
+const fullTitle = title ? `${title} | ${site.name}` : `${site.name}, ${site.role}`;
+// Absolute URLs need a known domain. Astro.site is set from the environment
+// (see astro.config.mjs), so nothing here hard-codes a domain.
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const ogImage = Astro.site && image ? new URL(image, Astro.site).href : undefined;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="theme-color" content="#fafaf7" />
+  </head>
+  <body>
+    <div id="top" tabindex="-1"></div>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <NavSidebar active={active} />
+    <SiteHeader active={active} />
+    <div class:list={['page', `page--${spacing}`]}>
+      <main id="main" tabindex="-1">
+        <slot />
+      </main>
+      <footer id="site-footer" class="page__footer">
+        <slot name="footer" />
+        <div class="page__end">
+          <BackToTop />
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
+
+<style>
+  #top:focus {
+    outline: none;
+  }
+
+  .page {
+    /* main-content is 1200px wide in the desktop-1440 frames */
+    max-width: 1200px;
+    margin-inline-start: var(--layout-sidebar-width);
+  }
+
+  .page--index {
+    padding: var(--index-pad-y) var(--index-pad-x);
+  }
+
+  .page--page {
+    padding: var(--page-pad-top) var(--page-pad-right) var(--page-pad-bottom) var(--page-pad-left);
+  }
+
+  .page__end {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .page--index .page__end {
+    padding-top: var(--page-stack-gap);
+  }
+</style>
