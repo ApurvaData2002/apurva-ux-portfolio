@@ -36,18 +36,15 @@ import { site } from '../data/site';
     <div class="about__resume">
       {
         about.resume.map((col) => (
-          <section class="about__col">
+          <section class:list={['about__col', { 'about__col--whole-lines': col.keepLinesWhole }]}>
             <h2 id={`resume-${col.heading.toLowerCase()}`} class="t-h2">
               {col.heading}
             </h2>
             <ul class:list={['about__list', 't-body', { 'about__list--spaced': col.spaced }]} role="list">
               {col.items.map((item) => (
                 <li>
-                  {item.lines.map((line, i) => (
-                    <>
-                      {i > 0 && <br />}
-                      {line}
-                    </>
+                  {item.lines.map((line) => (
+                    <span class="about__line">{line}</span>
                   ))}
                 </li>
               ))}
@@ -119,11 +116,30 @@ import { site } from '../data/site';
     }
   }
 
-  @media (min-width: 64em) {
+  /* Four columns once there is room for the Experience lines to stay whole
+     (the 1440 frame). Between 1024 and 1199px the 2x2 tablet layout is used. */
+  @media (min-width: 75em) {
     .about__resume {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      display: flex;
       gap: var(--meta-col-gap);
     }
+
+    .about__col {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .about__col--whole-lines {
+      flex: 0 0 auto;
+    }
+
+    .about__col--whole-lines .about__line {
+      white-space: nowrap;
+    }
+  }
+
+  .about__line {
+    display: block;
   }
 
   .about__col {

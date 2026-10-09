@@ -6,9 +6,11 @@ import ProjectTile from '../components/ProjectTile.astro';
 import { getPublishedCaseStudies } from '../lib/case-studies';
 
 const caseStudies = await getPublishedCaseStudies();
+// A short grid fits on one screen, so BackToTop only appears with more than 3 projects.
+const showBackToTop = caseStudies.length > 3;
 ---
 
-<BaseLayout active="projects" spacing="index">
+<BaseLayout active="projects" spacing="index" backToTop={showBackToTop}>
   <h1 class="sr-only">Projects</h1>
   {
     caseStudies.length > 0 ? (

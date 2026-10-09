@@ -128,7 +128,8 @@ Vite emitted in `_astro/`, then fails the build if any HTML links to it.
 - Visible focus on everything interactive: `outline: 2px solid var(--focus-ring)`,
   `outline-offset: 2px` (global `:focus-visible`). Never remove outlines without this.
 - `<html lang="en">`; landmarks header, nav, main, footer; "Skip to content" link first,
-  targeting `<main id="main">`.
+  targeting `<main id="main">`. The footer only renders when it has content: BackToTop
+  (on Home only with more than 3 projects; never on the 404) or a footer slot.
 - One H1 per page. Home: visually hidden "Projects" (`.sr-only`). About: "Hello there, I'm
   Apurva Singh." then H2s. Case study: title H1, sections H2. 404: "Page not found".
 - Active nav item has `aria-current="page"`.

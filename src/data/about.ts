@@ -20,7 +20,11 @@ export const about = {
     // The poster has words in it, so the alt text repeats them.
     alt: 'Apurva pointing at three skills: Research, Critical Thinking, Rapid Prototyping.',
   },
-  /** Resume columns. Each item is one entry; `lines` show on separate lines. */
+  /**
+   * Resume columns. Each item is one entry; `lines` show on separate lines.
+   * spaced: 16px between entries (otherwise 4px).
+   * keepLinesWhole: on desktop, each line stays on one line (the column widens to fit).
+   */
   resume: [
     {
       heading: 'Skills',
@@ -35,13 +39,15 @@ export const about = {
     {
       heading: 'Experience',
       spaced: true,
+      keepLinesWhole: true,
       items: [
-        { lines: ['Vibrant Brands Australia', 'UI/UX Designer', 'Sep 2026 – Present'] },
-        { lines: ['Eknai Subah Foundation', 'Website Designer & Manager', 'Jun 2025 – Jun 2026'] },
+        { lines: ['Vibrant Brands Australia', 'UI/UX Designer', '(Sep 2026 – Present)'] },
+        { lines: ['Eknai Subah Foundation', 'Website Designer & Manager', '(Jun 2025 – Jun 2026)'] },
       ],
     },
     {
       heading: 'Education',
+      spaced: true,
       items: [
         { lines: ['Bachelor of Computer Applications'] },
         { lines: ['Google UX Design Professional Certificate'] },
