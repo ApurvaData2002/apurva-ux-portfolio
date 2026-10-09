@@ -3,7 +3,7 @@
 A short note for each release of the live site. Newest first.
 Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
-## v1.0.1 (unreleased)
+## v1.0.1 (2026-10-10)
 
 - Each page has one address: `/about/` now redirects to `/about`, and the canonical tag matches.
 - The 404 page is kept out of search results.
