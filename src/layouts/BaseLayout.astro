@@ -46,7 +46,9 @@ const ogImage = Astro.site && image ? new URL(image, Astro.site).href : undefine
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
     {canonical && <link rel="canonical" href={canonical} />}
     <meta property="og:type" content="website" />
