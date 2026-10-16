@@ -3,6 +3,13 @@
 A short note for each release of the live site. Newest first.
 Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
+## v1.1.0 (2026-10-16)
+
+- New case studies: Event Management (admin dashboard) and Website redesign (NYAF school registration for BriBooks).
+- Life: refreshed mockups from Figma, updated section 04 text, and a new gallery: item sheets, cart and order.
+- Projects page: four tiles (Spunk, Life, Event Management, Website redesign); Back to top now shows.
+- Next project links run Spunk → Life → Event Management → Website redesign → Spunk.
+
 ## v1.0.2 (2026-10-10)
 
 - Home: Back to top only appears when there are more than 3 projects.
