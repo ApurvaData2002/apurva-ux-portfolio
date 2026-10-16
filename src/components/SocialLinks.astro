@@ -1,7 +1,8 @@
 ---
-// Email + LinkedIn icon links (Figma: social-icons in NavSidebar and nav-drawer).
-// Each link is a 44x44 hit area (Figma hit-area-44) made with padding, so the
-// icon itself keeps its Figma size.
+// Email + LinkedIn icons (Figma: social-icons in NavSidebar and nav-drawer).
+// Email is a button that copies the address and flashes "Copied!"; LinkedIn is a link.
+// Each is a 44x44 hit area (Figma hit-area-44) made with padding, so the icon
+// itself keeps its Figma size.
 import Icon from './Icon.astro';
 import { site } from '../data/site';
 
@@ -16,12 +17,19 @@ const glyph = variant === 'drawer' ? 24 : 16;
 ---
 
 <ul class:list={['social', `social--${variant}`]} role="list">
-  <li>
-    <a class="social__link" href={`mailto:${site.email}`} aria-label={`Email ${firstName}`}>
+  <li class="social__item">
+    <button
+      class="social__link"
+      type="button"
+      aria-label={`Copy email address, ${site.email}`}
+      data-copy-email={site.email}
+    >
       <Icon name="mail" size={glyph} />
-    </a>
+    </button>
+    <!-- Live region: present from page load so screen readers announce the change. -->
+    <span class="social__toast t-eyebrow" role="status" aria-live="polite" data-copy-toast></span>
   </li>
-  <li>
+  <li class="social__item">
     <a
       class="social__link"
       href={site.linkedin}
@@ -51,6 +59,10 @@ const glyph = variant === 'drawer' ? 24 : 16;
     --box: 40px;
   }
 
+  .social__item {
+    position: relative;
+  }
+
   .social__link {
     display: grid;
     place-items: center;
@@ -59,4 +71,89 @@ const glyph = variant === 'drawer' ? 24 : 16;
     color: var(--icon-default);
     border-radius: 4px;
   }
+
+  /* "Copied!" pill, styled like CursorView. Sits above the icon so it never
+     covers the LinkedIn icon next to it, left-aligned with the icon (and the
+     text column) so it can't run off the edge of a phone screen. */
+  .social__toast {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: calc((44px - var(--box)) / 2);
+    z-index: 5;
+    padding: var(--space-8) var(--space-16);
+    border-radius: var(--radius-pill);
+    background: var(--action-primary);
+    color: var(--text-on-action);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
+  }
+
+  /* Empty while hidden, so it takes no space and announces nothing. */
+  .social__toast:empty {
+    padding: 0;
+  }
+
+  .social__toast[data-visible] {
+    opacity: 1;
+    transform: none;
+  }
 </style>
+
+<script>
+  const SHOW_FOR = 1600;
+
+  // Clipboard API first; the textarea fallback covers older browsers and
+  // non-secure contexts. Returns false if neither worked.
+  async function copy(text: string): Promise<boolean> {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      const area = document.createElement('textarea');
+      area.value = text;
+      area.setAttribute('readonly', '');
+      area.style.position = 'fixed';
+      area.style.opacity = '0';
+      document.body.append(area);
+      area.select();
+      let ok = false;
+      try {
+        ok = document.execCommand('copy');
+      } catch {
+        ok = false;
+      }
+      area.remove();
+      return ok;
+    }
+  }
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy-email]')) {
+    const toast = button.parentElement?.querySelector<HTMLElement>('[data-copy-toast]');
+    let hideTimer = 0;
+    let clearTimer = 0;
+
+    button.addEventListener('click', async () => {
+      const email = button.dataset.copyEmail ?? '';
+      if (!(await copy(email))) {
+        // Copying isn't possible here: open the mail app instead.
+        window.location.href = `mailto:${email}`;
+        return;
+      }
+      if (!toast) return;
+      clearTimeout(hideTimer);
+      clearTimeout(clearTimer);
+      toast.textContent = 'Copied!';
+      toast.dataset.visible = '';
+      hideTimer = window.setTimeout(() => {
+        delete toast.dataset.visible;
+        // Empty it after the fade so it doesn't linger for screen readers.
+        clearTimer = window.setTimeout(() => (toast.textContent = ''), 200);
+      }, SHOW_FOR);
+    });
+  }
+</script>

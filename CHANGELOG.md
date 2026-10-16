@@ -3,6 +3,11 @@
 A short note for each release of the live site. Newest first.
 Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
+## v1.2.0 (2026-10-16)
+
+- The email icon (sidebar and mobile menu) now copies the email address and shows "Copied!".
+  Screen readers hear it too. If copying isn't possible, it opens the mail app instead.
+
 ## v1.1.0 (2026-10-16)
 
 - New case studies: Event Management (admin dashboard) and Website redesign (NYAF school registration for BriBooks).

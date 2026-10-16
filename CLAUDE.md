@@ -138,7 +138,10 @@ Vite emitted in `_astro/`, then fails the build if any HTML links to it.
 - Project tile: one `<a>`, accessible name = the title (meta and View pill are aria-hidden,
   meta is the `aria-describedby` description). CursorView is pointer-only and aria-hidden.
 - Icon links and the menu toggle have 44x44 hit areas via padding; icons stay their Figma size.
-  Link names: "Email Apurva", "Apurva on LinkedIn (opens in new tab)".
+  The email icon is a `<button>` ("Copy email address, <email>") that copies `site.email`
+  and flashes "Copied!" in a `role="status"` live region (falls back to `mailto:` if copying
+  fails). LinkedIn link name: "Apurva on LinkedIn (opens in new tab)". The email in the About
+  text stays a real `mailto:` link.
 - 404 "4 [avatar] 4" wrapper: `role="img" aria-label="404"`, children aria-hidden. Morse
   bubbles are aria-hidden and decorative (not focusable).
 - Avatar: `alt=""`. Video (if added) never plays with reduced motion and has a pause control.
