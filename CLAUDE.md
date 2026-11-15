@@ -101,6 +101,10 @@ Schema (`src/content.config.ts`):
   through `resolveImage()` and `CaseImage.astro`; never use raw `<img src="/...">` for content.
 - Image boxes have fixed aspect ratios from the Figma frames and `overflow: hidden`, so
   there is no layout shift. Below-the-fold images are lazy; the hero and first tiles are eager.
+- `sizes` is a viewport formula with no fixed cap (`src/lib/image-sizes.ts`, ProjectTile, the
+  About poster), because the content column grows past 1440. If the container padding, the
+  sidebar width or a grid gap changes, update those formulas too or wide screens get a file
+  that is too small and the image looks soft. The 2x exports are the ceiling.
 - Alt text describes what the screens show. Decorative images use `alt=""`. Images with
   words in them (the About poster) repeat those words in the alt text.
 
@@ -119,6 +123,10 @@ Vite emitted in `_astro/`, then fails the build if any HTML links to it.
 - `src/styles/tokens.css` mirrors the Figma variables (`surface/page` → `--surface-page`).
   Use tokens; don't hard-code colours, spacing or type sizes. Spacing is on an 8px grid.
 - Breakpoints: mobile < 768px (default), tablet ≥ 48em, desktop ≥ 64em (sidebar appears).
+- On desktop the content column (`.page` in BaseLayout) fills the space beside the 240px
+  sidebar with no max-width. At 1440 that reproduces the 1200px main-content of the Figma
+  frames; wider screens grow the images rather than leaving empty space on the right.
+  Prose keeps its own caps (stacked case sections 640px, case summary 640px, 404 480px).
 - Components match Figma names: NavSidebar, SiteHeader, MenuDrawer, ProjectTile, CaseHero,
   MetaRow, CaseSection, Gallery, NextProject, BackToTop, Button, CursorView, AvatarWave,
   Error404, Divider, Icon (renders Icon/* as inline SVG with currentColor).
