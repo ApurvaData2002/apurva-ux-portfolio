@@ -96,8 +96,10 @@ const ogImage = Astro.site && image ? new URL(image, Astro.site).href : undefine
   }
 
   .page {
-    /* main-content is 1200px wide in the desktop-1440 frames */
-    max-width: 1200px;
+    /* Fills the space beside the sidebar. At 1440 that is the 1200px
+       main-content of the Figma frames; wider screens grow the content instead
+       of leaving empty space on the right. Image `sizes` hints follow the same
+       formula (src/lib/image-sizes.ts, ProjectTile). */
     margin-inline-start: var(--layout-sidebar-width);
   }
 
