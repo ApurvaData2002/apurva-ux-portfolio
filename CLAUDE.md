@@ -130,6 +130,10 @@ Vite emitted in `_astro/`, then fails the build if any HTML links to it.
 - Components match Figma names: NavSidebar, SiteHeader, MenuDrawer, ProjectTile, CaseHero,
   MetaRow, CaseSection, Gallery, NextProject, BackToTop, Button, CursorView, AvatarWave,
   Error404, Divider, Icon (renders Icon/* as inline SVG with currentColor).
+- ContactFooter has no Figma counterpart either: a divider, a "Get in touch" label and the
+  email and LinkedIn links, shown only below 64em (`contact={false}` turns it off, as the 404
+  does). Its email is a plain `mailto:` showing the address, not the sidebar's copy button,
+  because tapping an address on a phone is expected to open the mail app.
 - SkillPill has no Figma counterpart. It renders one `<li>` pill (fully rounded,
   `--surface-subtle` background, `.t-small` in `--text-muted`) and is not interactive:
   no link, no button, no hover or focus styling. Its 14px inline padding is the one
@@ -154,8 +158,11 @@ breakpoint. Don't hardcode the desktop 40px here, or it misaligns on tablet and 
 - Visible focus on everything interactive: `outline: 2px solid var(--focus-ring)`,
   `outline-offset: 2px` (global `:focus-visible`). Never remove outlines without this.
 - `<html lang="en">`; landmarks header, nav, main, footer; "Skip to content" link first,
-  targeting `<main id="main">`. The footer only renders when it has content: BackToTop
-  (on Home only with more than 3 projects; never on the 404) or a footer slot.
+  targeting `<main id="main">`. The footer only renders when it has content: the contact
+  row, BackToTop (on Home only with more than 3 projects; never on the 404) or a footer slot.
+- Below 64em the sidebar is gone and its email and LinkedIn links are shut inside the menu
+  drawer, so ContactFooter repeats them at the end of the page. It is hidden from 64em up,
+  where the sidebar carries them. Keep a visible contact route at every breakpoint.
 - One H1 per page. Home: "I design mobile apps that are easy to use." (visible, in the intro
   block; it replaced an `.sr-only` "Projects" heading). About: "Hello there, I'm Apurva
   Singh." then H2s. Case study: title H1, sections H2. 404: "Page not found".
