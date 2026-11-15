@@ -3,6 +3,10 @@
 A short note for each release of the live site. Newest first.
 Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
+## v1.4.2 (2026-11-15)
+
+- The email and LinkedIn icons in the desktop sidebar are half again as large, with the same spacing between them. Their size elsewhere is unchanged.
+
 ## v1.4.1 (2026-11-15)
 
 - New contact address: apurva.singh.ux@gmail.com, used by the sidebar copy button, the contact row and the About page.
