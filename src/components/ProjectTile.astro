@@ -34,7 +34,7 @@ const metaId = `tile-${slug}-meta`;
     <CursorView class="tile__cursor" />
   </span>
   <span class="tile__caption">
-    <span class="t-caption tile__title">{cardTitle ?? title}</span>
+    <span class="tile__title">{cardTitle ?? title}</span>
     {/* The link's name comes from its content. aria-hidden leaves only the title in it
         (WCAG 2.5.3 label in name); aria-describedby still reads the meta after it. */}
     <span id={metaId} class="t-small tile__meta" aria-hidden="true">{meta}</span>
@@ -86,13 +86,25 @@ const metaId = `tile-${slug}-meta`;
   .tile__caption {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: var(--space-16);
     padding: var(--space-8);
   }
 
+  /* The title has to read as a title under a large image. It used to be the
+     Figma Label/Tile Caption style, 13px regular, against a 12px regular meta:
+     one pixel apart and the same weight, so neither read as the heading. The
+     24px line keeps the caption bar at the height the Figma tiles have. */
   .tile__title {
-    flex: 1 1 0;
+    /* The basis lets the meta drop onto its own line when the card is too
+       narrow to hold both, instead of squeezing the title into a column so
+       thin it wraps four times (a 288px card at 320px wide). */
+    flex: 1 1 10rem;
     min-width: 0;
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--size-16);
+    line-height: var(--leading-24);
   }
 
   .tile__meta {
