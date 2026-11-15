@@ -13,7 +13,9 @@ interface Props {
 
 const { variant } = Astro.props;
 const firstName = site.name.split(' ')[0];
-const glyph = variant === 'drawer' ? 24 : 16;
+// Glyph height. The sidebar's icons are 1.5x their original 16px so they read
+// at a glance beside the name; the drawer keeps the size it has always had.
+const glyph = 24;
 ---
 
 <ul class:list={['social', `social--${variant}`]} role="list">
@@ -51,8 +53,12 @@ const glyph = variant === 'drawer' ? 24 : 16;
     margin-inline-start: calc((var(--box) - 44px) / 2);
   }
 
+  /* --box is the nominal Figma icon box, scaled by 1.5 with the glyph (24 -> 36).
+     The 8px gap keeps the whitespace between the two icons at the 25px it had
+     before they grew, instead of letting the bigger glyphs crowd each other. */
   .social--sidebar {
-    --box: 24px;
+    --box: 36px;
+    gap: var(--space-8);
   }
 
   .social--drawer {
