@@ -1,0 +1,96 @@
+---
+// Contact row at the end of the page, for tablet and mobile only.
+// Below 64em the NavSidebar is replaced by the header menu, so the email and
+// LinkedIn links are hidden inside the closed drawer and a visitor has no
+// visible way to get in touch. Hidden at >= 64em, where the sidebar shows them.
+//
+// The email here is a plain mailto: link showing the address, not the sidebar's
+// copy-to-clipboard button: on a phone, tapping an email address is expected to
+// open the mail app, and the visible address can still be copied by hand.
+import Icon from './Icon.astro';
+import Divider from './Divider.astro';
+import { site } from '../data/site';
+---
+
+<div class="contact-footer">
+  <Divider />
+  <div class="contact-footer__body">
+    <p class="t-eyebrow contact-footer__label">Get in touch</p>
+    <ul class="contact-footer__links" role="list">
+      <li>
+        <a class="contact-footer__link t-body" href={`mailto:${site.email}`}>
+          <Icon name="mail" size={16} />
+          <span class="contact-footer__text">{site.email}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="contact-footer__link t-body"
+          href={site.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon name="linkedin" size={16} />
+          <span class="contact-footer__text">LinkedIn<span class="sr-only"> (opens in new tab)</span></span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<style>
+  .contact-footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--page-stack-gap);
+    margin-top: var(--page-stack-gap);
+  }
+
+  /* The sidebar carries these links from 64em up. */
+  @media (min-width: 64em) {
+    .contact-footer {
+      display: none;
+    }
+  }
+
+  .contact-footer__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .contact-footer__label {
+    color: var(--text-muted);
+  }
+
+  .contact-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-8) var(--space-24);
+  }
+
+  .contact-footer__links li {
+    min-width: 0;
+  }
+
+  /* 44px tall target (Figma hit-area-44) while the icon keeps its Figma size. */
+  .contact-footer__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-8);
+    min-height: 44px;
+    max-width: 100%;
+    color: var(--text-primary);
+  }
+
+  /* The address is one long word: let it break so it still fits a 320px screen
+     with text at 200%. */
+  .contact-footer__text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .contact-footer__link :global(.icon) {
+    color: var(--icon-default);
+  }
+</style>
