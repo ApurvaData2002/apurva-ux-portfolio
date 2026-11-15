@@ -1,9 +1,13 @@
 ---
-// Home: the project grid, generated from the case-study collection.
+// Home: an intro block (skill pills, then the page heading), followed by the
+// project grid generated from the case-study collection.
 // Drafts are left out; order comes from each case study's `order` field.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectTile from '../components/ProjectTile.astro';
+import SkillPill from '../components/SkillPill.astro';
 import { getPublishedCaseStudies } from '../lib/case-studies';
+
+const skills = ['UX Research', 'UI Design', 'User Flows', 'Prototyping'];
 
 const caseStudies = await getPublishedCaseStudies();
 // A short grid fits on one screen, so BackToTop only appears with more than 3 projects.
@@ -11,23 +15,60 @@ const showBackToTop = caseStudies.length > 3;
 ---
 
 <BaseLayout active="projects" spacing="index" backToTop={showBackToTop}>
-  <h1 class="sr-only">Projects</h1>
-  {
-    caseStudies.length > 0 ? (
-      <ul class="projects-grid" role="list">
-        {caseStudies.map((entry, i) => (
-          <li>
-            <ProjectTile entry={entry} eager={i < 2} />
-          </li>
-        ))}
+  <div class="home">
+    <div class="home-intro">
+      <ul class="home-intro__skills" role="list">
+        {skills.map((skill) => <SkillPill>{skill}</SkillPill>)}
       </ul>
-    ) : (
-      <p class="t-body">New case studies are on their way.</p>
-    )
-  }
+      <div class="home-intro__text">
+        <h1 class="t-h1">I design mobile apps that are easy to use.</h1>
+        <p class="t-lead">I’m Apurva, a UI/UX designer. Here are some of the apps I’ve worked on.</p>
+      </div>
+    </div>
+
+    {
+      caseStudies.length > 0 ? (
+        <ul class="projects-grid" role="list">
+          {caseStudies.map((entry, i) => (
+            <li>
+              <ProjectTile entry={entry} eager={i < 2} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="t-body">New case studies are on their way.</p>
+      )
+    }
+  </div>
 </BaseLayout>
 
 <style>
+  /* The page container (.page--index) already applies the side padding, so the
+     intro and the grid line up without any padding of their own. */
+  .home {
+    display: flex;
+    flex-direction: column;
+    gap: var(--page-stack-gap);
+  }
+
+  .home-intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+  }
+
+  .home-intro__skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-8);
+  }
+
+  .home-intro__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
   .projects-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);

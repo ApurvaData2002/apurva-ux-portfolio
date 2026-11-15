@@ -1,0 +1,20 @@
+---
+// One skill label in the home intro ("UX Research", "UI Design"...).
+// Renders a single <li>; the page that uses it owns the <ul> and the row layout.
+// Not interactive: no link, no button, no hover or focus styling.
+---
+
+<li class="skill-pill t-small">
+  <slot />
+</li>
+
+<style>
+  .skill-pill {
+    /* 14px inline padding is off the 8px scale on purpose, so the rounded ends
+       sit evenly around the label; the vertical padding stays on the scale. */
+    padding: var(--space-8) 14px;
+    border-radius: var(--radius-pill);
+    background: var(--surface-subtle);
+    color: var(--text-muted);
+  }
+</style>
