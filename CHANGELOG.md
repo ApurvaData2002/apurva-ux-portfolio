@@ -3,6 +3,10 @@
 A short note for each release of the live site. Newest first.
 Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
+## v1.3.0 (2026-11-15)
+
+- The Projects page opens with a row of skill pills, a heading and a short intro, above the project cards.
+
 ## v1.2.0 (2026-10-16)
 
 - The email icon (sidebar and mobile menu) now copies the email address and shows "Copied!".
