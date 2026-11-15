@@ -4,7 +4,7 @@ export const site = {
   role: 'UI/UX Designer',
   description:
     'Apurva Singh, UI/UX Designer. Case studies in mobile app design, research and prototyping.',
-  email: 'sapurva523@gmail.com',
+  email: 'apurva.singh.ux@gmail.com',
   linkedin: 'https://www.linkedin.com/in/apurva-singh-2002',
   avatar: '/avatar.jpg',
   /** Optional waving video. Add these files to public/ and the avatar uses them automatically. */

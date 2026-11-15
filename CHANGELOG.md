@@ -3,6 +3,10 @@
 A short note for each release of the live site. Newest first.
 Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
+## v1.4.1 (2026-11-15)
+
+- New contact address: apurva.singh.ux@gmail.com, used by the sidebar copy button, the contact row and the About page.
+
 ## v1.4.0 (2026-11-15)
 
 - On tablet and phone, where the sidebar is replaced by the menu button, every page now ends with a "Get in touch" row: the email address and a LinkedIn link. Before this, a visitor had to open the menu to find any way to make contact.
