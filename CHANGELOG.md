@@ -3,6 +3,10 @@
 A short note for each release of the live site. Newest first.
 Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
+## v1.3.1 (2026-11-15)
+
+- On screens wider than 1440 the content now fills the width instead of leaving empty space on the right, so the project cards and case-study images get bigger. Images are served at the larger sizes, so they stay sharp.
+
 ## v1.3.0 (2026-11-15)
 
 - The Projects page opens with a row of skill pills, a heading and a short intro, above the project cards.
