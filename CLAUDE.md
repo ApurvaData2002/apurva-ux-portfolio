@@ -122,6 +122,24 @@ Vite emitted in `_astro/`, then fails the build if any HTML links to it.
 - Components match Figma names: NavSidebar, SiteHeader, MenuDrawer, ProjectTile, CaseHero,
   MetaRow, CaseSection, Gallery, NextProject, BackToTop, Button, CursorView, AvatarWave,
   Error404, Divider, Icon (renders Icon/* as inline SVG with currentColor).
+- SkillPill has no Figma counterpart. It renders one `<li>` pill (fully rounded,
+  `--surface-subtle` background, `.t-small` in `--text-muted`) and is not interactive:
+  no link, no button, no hover or focus styling. Its 14px inline padding is the one
+  deliberate exception to the 8px scale; the vertical padding stays on it.
+
+## Home page
+
+`src/pages/index.astro` is an intro block then the project grid, in one flex column with
+`--page-stack-gap` between them (32px desktop and tablet, 24px mobile):
+
+1. `.home-intro__skills`: a `<ul role="list">` of SkillPill items, flex row, `--space-8` gap,
+   wrapping. The labels are the `skills` array at the top of the page.
+2. `.home-intro__text`: the H1 and the intro paragraph, `--space-8` apart, using the same
+   `.t-h1` and `.t-lead` as CaseHero so the type matches the case-study pages.
+
+`--space-16` separates the two. Neither gets padding of its own: `.page--index` in
+BaseLayout already applies the side padding, so the intro lines up with the grid at every
+breakpoint. Don't hardcode the desktop 40px here, or it misaligns on tablet and mobile.
 
 ## Accessibility requirements (WCAG 2.2 AA)
 
@@ -130,8 +148,9 @@ Vite emitted in `_astro/`, then fails the build if any HTML links to it.
 - `<html lang="en">`; landmarks header, nav, main, footer; "Skip to content" link first,
   targeting `<main id="main">`. The footer only renders when it has content: BackToTop
   (on Home only with more than 3 projects; never on the 404) or a footer slot.
-- One H1 per page. Home: visually hidden "Projects" (`.sr-only`). About: "Hello there, I'm
-  Apurva Singh." then H2s. Case study: title H1, sections H2. 404: "Page not found".
+- One H1 per page. Home: "I design mobile apps that are easy to use." (visible, in the intro
+  block; it replaced an `.sr-only` "Projects" heading). About: "Hello there, I'm Apurva
+  Singh." then H2s. Case study: title H1, sections H2. 404: "Page not found".
 - Active nav item has `aria-current="page"`.
 - Menu toggle: `<button>` with `aria-expanded`, `aria-controls`, label "Open menu"/"Close menu";
   Esc closes and returns focus to the toggle; the page behind is `inert` while open.
