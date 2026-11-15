@@ -6,6 +6,7 @@ import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal
 import NavSidebar from '../components/NavSidebar.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import BackToTop from '../components/BackToTop.astro';
+import ContactFooter from '../components/ContactFooter.astro';
 import { site, type NavKey } from '../data/site';
 
 interface Props {
@@ -20,6 +21,8 @@ interface Props {
   image?: string;
   /** Show BackToTop at the end of the page (off on the 404, which fits on one screen). */
   backToTop?: boolean;
+  /** Show the tablet/mobile contact row at the end of the page (off on the 404). */
+  contact?: boolean;
   /** Keep the page out of search results (the 404). */
   noindex?: boolean;
 }
@@ -31,9 +34,13 @@ const {
   spacing = 'page',
   image,
   backToTop = true,
+  contact = true,
   noindex = false,
 } = Astro.props;
-const hasFooter = backToTop || Astro.slots.has('footer');
+const hasFooter = backToTop || contact || Astro.slots.has('footer');
+// The contact row is the only footer content below 64em on some pages, and it is
+// hidden from 64em up, so the footer would be an empty landmark on desktop.
+const contactOnlyFooter = contact && !backToTop && !Astro.slots.has('footer');
 
 const fullTitle = title ? `${title} | ${site.name}` : `${site.name}, ${site.role}`;
 // Absolute URLs need a known domain. Astro.site is set from the environment
@@ -76,8 +83,9 @@ const ogImage = Astro.site && image ? new URL(image, Astro.site).href : undefine
       </main>
       {
         hasFooter && (
-          <footer id="site-footer" class="page__footer">
+          <footer id="site-footer" class:list={['page__footer', { 'page__footer--contact-only': contactOnlyFooter }]}>
             <slot name="footer" />
+            {contact && <ContactFooter />}
             {backToTop && (
               <div class="page__end">
                 <BackToTop />
@@ -116,7 +124,14 @@ const ogImage = Astro.site && image ? new URL(image, Astro.site).href : undefine
     justify-content: flex-end;
   }
 
-  .page--index .page__end {
+  .page--index .page__end,
+  :global(.contact-footer) + .page__end {
     padding-top: var(--page-stack-gap);
+  }
+
+  @media (min-width: 64em) {
+    .page__footer--contact-only {
+      display: none;
+    }
   }
 </style>
