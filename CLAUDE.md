@@ -153,6 +153,56 @@ Vite emitted in `_astro/`, then fails the build if any HTML links to it.
 BaseLayout already applies the side padding, so the intro lines up with the grid at every
 breakpoint. Don't hardcode the desktop 40px here, or it misaligns on tablet and mobile.
 
+## Motion
+
+Motion has no Figma counterpart beyond the tile hover, so everything here is a
+deliberate addition. It is restrained on purpose: a visitor decides in well under
+a minute, so motion is there to orient them, never to make them wait.
+
+Tokens (`tokens.css`): `--duration-fast` 150ms, `--duration-base` 200ms,
+`--duration-tile` 250ms, `--duration-slow` 300ms. `--ease-out` for anything
+arriving, `--ease-in` for anything leaving. Nothing animates for longer than
+300ms, and entrances are slower than the matching exit (the drawer opens in
+200ms and closes in 150ms).
+
+**Animate `transform` and `opacity` only.** Animating layout properties would
+cost the CLS 0 and the perfect Lighthouse scores.
+
+**The `data-motion` contract.** An inline script in `BaseLayout` head sets
+`data-motion` on `<html>` before the first paint, and only when scripting runs
+and the visitor has not asked for reduced motion. Every rule that starts an
+element hidden is gated on `html[data-motion]`. This is what keeps the site
+safe: the global `prefers-reduced-motion` block in `global.css` kills transitions
+with `!important`, so anything written as "start at `opacity: 0`, transition in"
+would be **permanently invisible** for those visitors. Gating on the attribute
+means the hidden state is never applied to them at all. Toggling reduce-motion
+mid-visit removes the attribute and reveals anything still waiting.
+
+Never add a reveal that is hidden by CSS alone. `data-reveal` is set by script
+(the case-study page) and the matching CSS lives in `global.css`; with no
+JavaScript, with reduced motion, or without IntersectionObserver nothing is
+hidden in the first place. Check any new reveal in all three modes.
+
+What moves:
+
+| Where | What | Timing |
+|---|---|---|
+| ProjectTile | image scales 1.05, View pill follows the cursor (Figma) | 250ms |
+| MenuDrawer | fades and slides 8px, `@starting-style` + `allow-discrete` so it can animate out of `display: none` | 200ms in, 150ms out |
+| NextProject | arrow moves 4px, title underlines, on hover and focus | 150ms |
+| NavLinks | colour to `--text-accent` plus an underline on hover | 150ms |
+| Home | skill pills, then heading, then tiles, 40ms apart, fade and rise 8px | 300ms each, all done by 500ms |
+| Case sections | fade and rise 12px as they enter view, one shot | 300ms |
+| ScrollProgress | 2px bar, scaled straight from scroll position, no transition | per frame |
+
+`ScrollProgress` is case-study only, `aria-hidden` (the scrollbar says the same
+thing), and stays on with reduced motion because it follows the visitor's own
+scrolling rather than animating by itself. It renders `hidden` until its script
+takes over, so no-JS never shows a bar stuck at zero.
+
+Hover effects go inside `@media (hover: hover) and (pointer: fine)`, matching
+ProjectTile, so a touch device never gets a stuck hover state.
+
 ## Accessibility requirements (WCAG 2.2 AA)
 
 - Visible focus on everything interactive: `outline: 2px solid var(--focus-ring)`,

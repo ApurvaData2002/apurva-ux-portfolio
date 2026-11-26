@@ -48,6 +48,18 @@ const { active, variant } = Astro.props;
 
   .nav-links__link {
     color: var(--text-primary);
+    text-underline-offset: 4px;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  /* The link colour is already the darkest in the palette, so hover lightens it
+     and underlines: the underline carries the state on its own, which colour
+     alone would not. */
+  @media (hover: hover) and (pointer: fine) {
+    .nav-links__link:hover {
+      color: var(--text-accent);
+      text-decoration: underline;
+    }
   }
 
   .nav-links__dot {

@@ -99,7 +99,12 @@
   --duration-fast: 150ms;
   --duration-base: 200ms;
   --duration-tile: 250ms;
+  /* Entrances and scroll reveals. Nothing on the site animates for longer. */
+  --duration-slow: 300ms;
   --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  /* Exit curve, for things leaving the screen: goes quickly, no settle.
+     Entrances keep --ease-out, so they arrive fast and come to rest. */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
 
   /* ---- Responsive (Responsive collection), Mobile mode ---- */
   --page-pad-top: var(--space-24);

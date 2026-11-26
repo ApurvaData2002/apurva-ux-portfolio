@@ -8,6 +8,7 @@ import CaseSection from '../../components/CaseSection.astro';
 import Gallery from '../../components/Gallery.astro';
 import NextProject from '../../components/NextProject.astro';
 import Divider from '../../components/Divider.astro';
+import ScrollProgress from '../../components/ScrollProgress.astro';
 import { getNextCaseStudy, getPublishedCaseStudies, type CaseStudy } from '../../lib/case-studies';
 
 export async function getStaticPaths() {
@@ -28,6 +29,8 @@ const { data } = entry;
 ---
 
 <BaseLayout title={data.title} description={data.summary} image={data.hero}>
+  <ScrollProgress />
+
   <div class="case-study">
     <CaseHero title={data.title} summary={data.summary} hero={data.hero} heroAlt={data.heroAlt} roles={data.roles} />
 
@@ -71,3 +74,42 @@ const { data } = entry;
     margin-top: var(--page-section-gap);
   }
 </style>
+
+<script>
+  // Fade each section up as it comes into view, so a 5000px case study has some
+  // rhythm instead of being one unbroken scroll.
+  //
+  // This script is what adds `data-reveal`, and it only does so once BaseLayout
+  // has set `data-motion`. So the hidden state can never outlive the code that
+  // clears it: with no JavaScript, with reduced motion, or in a browser without
+  // IntersectionObserver, nothing is hidden in the first place.
+  if (
+    document.documentElement.hasAttribute('data-motion') &&
+    'IntersectionObserver' in window
+  ) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          (entry.target as HTMLElement).dataset.revealed = '';
+          // One shot. Scrolling back up must not replay it.
+          observer.unobserve(entry.target);
+        }
+      },
+      // Start once the block is properly on screen, not on its first pixel.
+      { rootMargin: '0px 0px -10% 0px' },
+    );
+
+    const blocks = document.querySelectorAll<HTMLElement>(
+      '.case-study__body > *, .case-study .gallery',
+    );
+
+    for (const block of blocks) {
+      // Anything already on screen belongs to the first paint, not to the
+      // scroll: leave it be rather than fading it in under the visitor.
+      if (block.getBoundingClientRect().top < window.innerHeight) continue;
+      block.dataset.reveal = '';
+      observer.observe(block);
+    }
+  }
+</script>

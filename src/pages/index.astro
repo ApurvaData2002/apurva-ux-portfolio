@@ -80,4 +80,44 @@ const showBackToTop = caseStudies.length > 3;
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
+
+  @keyframes home-rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  /* Staging: the pills, then the heading, then the tiles, 40ms apart, so the
+     page assembles in the order it is meant to be read instead of landing all
+     at once. The last tile has finished by 500ms, well inside the few seconds a
+     visitor spends deciding whether to stay.
+     `html[data-motion]` is set in BaseLayout before the first paint, so with no
+     JavaScript or with reduced motion none of this applies and every block
+     renders where it belongs. */
+  :global(html[data-motion]) .home-intro__skills,
+  :global(html[data-motion]) .home-intro__text,
+  :global(html[data-motion]) .projects-grid > li {
+    animation: home-rise var(--duration-slow) var(--ease-out) both;
+  }
+
+  :global(html[data-motion]) .home-intro__text {
+    animation-delay: 40ms;
+  }
+
+  :global(html[data-motion]) .projects-grid > li {
+    animation-delay: 80ms;
+  }
+
+  :global(html[data-motion]) .projects-grid > li:nth-child(2) {
+    animation-delay: 120ms;
+  }
+
+  :global(html[data-motion]) .projects-grid > li:nth-child(3) {
+    animation-delay: 160ms;
+  }
+
+  :global(html[data-motion]) .projects-grid > li:nth-child(4) {
+    animation-delay: 200ms;
+  }
 </style>

@@ -1,0 +1,66 @@
+---
+// A 2px bar across the top of the viewport showing how far through the page the
+// visitor has read. Case studies run past 5000px, so it answers "how much of
+// this is left" without having to hunt for the scrollbar. No Figma counterpart.
+// Decorative: the scrollbar already carries the same information, so it is
+// hidden from assistive technology. It stays on with reduced motion, because it
+// follows the visitor's own scrolling rather than animating by itself.
+// Hidden until the script takes over, so with no JavaScript there is no bar
+// sitting at zero for a page the visitor has already scrolled.
+---
+
+<div class="scroll-progress" aria-hidden="true" hidden data-scroll-progress>
+  <span class="scroll-progress__bar" data-scroll-progress-bar></span>
+</div>
+
+<style>
+  .scroll-progress {
+    position: fixed;
+    inset: 0 0 auto 0;
+    /* Above the sticky header (20) and the drawer (19). */
+    z-index: 30;
+    height: 2px;
+    pointer-events: none;
+  }
+
+  .scroll-progress[hidden] {
+    display: none;
+  }
+
+  .scroll-progress__bar {
+    display: block;
+    height: 100%;
+    background: var(--action-primary);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    /* Set straight from the scroll position each frame, with no transition: it
+       should track the scroll, not trail behind it. */
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-scroll-progress]');
+  const bar = document.querySelector<HTMLElement>('[data-scroll-progress-bar]');
+
+  if (root && bar) {
+    root.hidden = false;
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      // A page shorter than the viewport has no progress to report.
+      const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      bar.style.transform = `scaleX(${ratio})`;
+    };
+
+    // Scroll events outrun paint, so coalesce them onto one frame.
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    addEventListener('scroll', schedule, { passive: true });
+    addEventListener('resize', schedule, { passive: true });
+    update();
+  }
+</script>

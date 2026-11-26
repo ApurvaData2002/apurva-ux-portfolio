@@ -3,6 +3,14 @@
 A short note for each release of the live site. Newest first.
 Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
+## v1.5.0 (2026-11-26)
+
+- The menu on tablet and phone now slides and fades open instead of snapping, and closes a little quicker than it opens.
+- The "Next project" link at the end of a case study responds when you point at it or tab to it: the arrow moves and the title underlines. The sidebar nav links got the same treatment.
+- The Projects page arrives in order: the skill pills, then the heading, then the cards, about half a second in total.
+- Case-study sections fade up as you reach them, and a thin bar across the top of the page shows how far through you are.
+- All of it is off for anyone whose system is set to reduce motion, and the pages read exactly as before with JavaScript turned off.
+
 ## v1.4.2 (2026-11-15)
 
 - The email and LinkedIn icons in the desktop sidebar are half again as large, with the same spacing between them. Their size elsewhere is unchanged.
