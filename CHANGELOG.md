@@ -11,6 +11,10 @@ Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 - Case-study sections fade up as you reach them, and a thin bar across the top of the page shows how far through you are.
 - All of it is off for anyone whose system is set to reduce motion, and the pages read exactly as before with JavaScript turned off.
 
+## v1.4.3 (2026-11-26)
+
+- The project card titles on the Projects page now read as titles: larger and in the heading weight, instead of sitting at almost the same size and weight as the "Mobile app · 2026" line beside them. On very narrow phones that line now drops below the title rather than squashing it.
+
 ## v1.4.2 (2026-11-15)
 
 - The email and LinkedIn icons in the desktop sidebar are half again as large, with the same spacing between them. Their size elsewhere is unchanged.

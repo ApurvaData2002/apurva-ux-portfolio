@@ -138,6 +138,13 @@ Vite emitted in `_astro/`, then fails the build if any HTML links to it.
   `--surface-subtle` background, `.t-small` in `--text-muted`) and is not interactive:
   no link, no button, no hover or focus styling. Its 14px inline padding is the one
   deliberate exception to the 8px scale; the vertical padding stays on it.
+- ProjectTile's title is a deliberate departure from Figma. The frames give it the
+  Label/Tile Caption style (13px regular) against a 12px regular meta: one pixel apart
+  and the same weight, so under a 540px image neither read as the heading. It is now
+  `--font-heading` at `--size-16` / `--font-weight-medium` / `--leading-24`, which keeps
+  the caption bar at the 40px height the Figma tiles have. The caption wraps
+  (`flex-wrap`) and the title has `flex: 1 1 10rem`, so below about 360px the meta drops
+  to its own line instead of squeezing the title into a four-line column.
 
 ## Home page
 
