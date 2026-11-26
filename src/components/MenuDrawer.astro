@@ -29,10 +29,33 @@ const { id, active } = Astro.props;
     padding: var(--space-32) var(--space-16) var(--space-40);
     overflow-y: auto;
     background: var(--surface-subtle);
+    opacity: 1;
+    transform: none;
+    /* `display` is in the list so the closing frames are still on screen; it
+       flips to none only at the end (allow-discrete). Browsers without
+       @starting-style skip the animation and the drawer appears at once, which
+       is what it did before. */
+    transition:
+      opacity var(--duration-base) var(--ease-out),
+      transform var(--duration-base) var(--ease-out),
+      display var(--duration-base) allow-discrete;
   }
 
+  /* Where the drawer animates from when it is shown. */
+  @starting-style {
+    .menu-drawer {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  /* Closing is quicker than opening, and on the exit curve. */
   .menu-drawer[hidden] {
     display: none;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-in);
   }
 
   @media (min-width: 48em) {

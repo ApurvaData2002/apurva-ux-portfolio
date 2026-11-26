@@ -206,3 +206,20 @@ main:focus {
     scroll-behavior: auto !important;
   }
 }
+
+/* Scroll reveal. `data-reveal` is only ever set by script (see the case-study
+   page), and only once `data-motion` is on <html>, so the hidden state can
+   never outlive the script that clears it: with no JavaScript, with reduced
+   motion, or without IntersectionObserver the blocks render in place. */
+html[data-motion] [data-reveal] {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+
+html[data-motion] [data-reveal][data-revealed] {
+  opacity: 1;
+  transform: none;
+}

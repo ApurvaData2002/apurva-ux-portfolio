@@ -41,7 +41,39 @@ const { href, title, label = 'Next project' } = Astro.props;
     color: var(--text-muted);
   }
 
+  .next-project__title {
+    text-underline-offset: 4px;
+  }
+
   .next-project :global(.next-project__icon) {
+    flex: none;
     color: var(--icon-default);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out);
+  }
+
+  /* This link is the last thing on a case study, so it is what the visitor
+     leaves with. The arrow moves the way the link goes. Hover only where there
+     is a real pointer, as on the project tiles. */
+  @media (hover: hover) and (pointer: fine) {
+    .next-project:hover .next-project__title {
+      text-decoration: underline;
+    }
+
+    .next-project:hover :global(.next-project__icon) {
+      transform: translateX(4px);
+      color: var(--text-primary);
+    }
+  }
+
+  /* Keyboard gets the same answer, on top of the focus ring. */
+  .next-project:focus-visible .next-project__title {
+    text-decoration: underline;
+  }
+
+  .next-project:focus-visible :global(.next-project__icon) {
+    transform: translateX(4px);
+    color: var(--text-primary);
   }
 </style>

@@ -71,6 +71,22 @@ const ogImage = Astro.site && image ? new URL(image, Astro.site).href : undefine
     {canonical && <meta property="og:url" content={canonical} />}
     {ogImage && <meta property="og:image" content={ogImage} />}
     <meta name="theme-color" content="#fafaf7" />
+    <script is:inline>
+      // Entrance and scroll-reveal animations are opt-in, and this attribute is
+      // the only thing their CSS keys off. It is set here, before the first
+      // paint, and only when scripting runs and the visitor has not asked for
+      // reduced motion. Without it every block renders in its final, visible
+      // state, so nothing can be left hidden by a rule that never un-hides it.
+      (function () {
+        var query = window.matchMedia('(prefers-reduced-motion: reduce)');
+        var apply = function () {
+          document.documentElement.toggleAttribute('data-motion', !query.matches);
+        };
+        apply();
+        // Turning "reduce motion" on mid-visit reveals anything still waiting.
+        query.addEventListener('change', apply);
+      })();
+    </script>
   </head>
   <body>
     <div id="top" tabindex="-1"></div>
