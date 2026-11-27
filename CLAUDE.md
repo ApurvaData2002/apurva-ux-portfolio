@@ -97,8 +97,8 @@ Schema (`src/content.config.ts`):
 - Source: Figma file `personal-portfolio` (key `xspfhLJkxnzcJ65ZUJTrtk`), page **pictures**,
   frames named "LIFE · …" / "SPUNK · …" in the "… mockups (auto)" sections. Export hero,
   stacked and gallery at **2x** (2016x1136 and 640x640) and the **4:3 split frames at 3x**
-  (1608x1200). Split images are 3x because from 90em a split section's image bleeds into
-  the page padding and is about 760 CSS px wide at 1440, so 2x would be short.
+  (1608x1200). Split images are 3x because from 90em a split section's image is about
+  616 CSS px wide at 1440 and more on wider screens, so 2x would be short.
 - Frontmatter uses public URL paths ("/case-studies/life/hero.png"). `src/lib/images.ts`
   glob-imports `public/` so Astro's `<Image>` / `getImage` can output AVIF/WebP. Always go
   through `resolveImage()` and `CaseImage.astro`; never use raw `<img src="/...">` for content.
@@ -272,12 +272,14 @@ before.
   specificity, so source order decides.
 
 From 90em up, a split section with an image changes again: the text column narrows to
-360fr, the image takes 616fr and bleeds into the page's 144px right padding so it
-reaches the edge of the viewport. The aspect ratio is unchanged, so the box still has a
-known height and CLS stays 0. It is held back to 90em because at 1024 the text column
-would be about 200px. **`split.sizes` in `src/lib/image-sizes.ts` carries the matching
-formula** (`(100vw - 464px) * 0.631 + 144px`): change one without the other and the
-browser picks the wrong file.
+360fr and the image takes 616fr, so the screens get more room. The image stays inside
+the page padding, lining up with the hero and the stacked sections; an earlier version
+bled it into the padding to the edge of the viewport and that was rejected as not
+looking good. The aspect ratio is unchanged, so the box still has a known height and
+CLS stays 0. Held back to 90em because at 1024 the text column would be about 200px.
+**`split.sizes` in `src/lib/image-sizes.ts` carries the matching formula**
+(`(100vw - 464px) * 0.631`): change one without the other and the browser picks the
+wrong file.
 - Definition of done for a PR that changes UI: `npm run check`, `npm run audit:a11y` and
   `npm run audit:lighthouse` pass; keyboard-only pass; NVDA/VoiceOver pass for Home and one
   case study before merging.

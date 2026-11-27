@@ -13,13 +13,13 @@ export const imageSizes = {
   },
   /**
    * Split sections: 336 wide on tablet, 536 from 64em, and from 90em the wider
-   * column plus the 144px right padding it bleeds into (see CaseSection).
-   * 616/976 = 0.631 of the grid area, then + 144px for the bleed.
+   * image column of the Linear-style split (see CaseSection), which is
+   * 616/976 = 0.631 of the grid area.
    */
   split: {
     widths: [400, 536, 800, 1072, 1600],
     sizes:
-      '(min-width: 90em) calc((100vw - 464px) * 0.631 + 144px), (min-width: 64em) calc((100vw - 464px) * 0.55), calc((100vw - 96px) / 2)',
+      '(min-width: 90em) calc((100vw - 464px) * 0.631), (min-width: 64em) calc((100vw - 464px) * 0.55), calc((100vw - 96px) / 2)',
   },
   /** Mobile version of a split section (the 16:9 "wide" export). */
   splitMobile: {

@@ -146,20 +146,16 @@ const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
     }
   }
 
-  /* From 1440 up a split section gives the screens the room: a narrower text
-     column, and the image running out into the page's 144px right padding so
-     it reaches the edge of the viewport. Held back to 90em because at 1024 the
-     text column would be about 200px wide. The aspect ratio is unchanged, so
-     the box still has a known height and CLS stays at 0. `sizes` in
-     src/lib/image-sizes.ts has the matching formula: change one and the image
-     is served at the wrong size. */
+  /* From 1440 up a split section gives the screens more room: a narrower text
+     column against a wider image. The image stays inside the page padding,
+     lining up with the hero and the stacked sections. Held back to 90em
+     because at 1024 the text column would be about 200px wide. The aspect
+     ratio is unchanged, so the box still has a known height and CLS stays at
+     0. `sizes` in src/lib/image-sizes.ts has the matching formula: change one
+     and the image is served at the wrong size. */
   @media (min-width: 90em) {
     .case-section--split.case-section--has-image {
       grid-template-columns: minmax(0, 360fr) minmax(0, 616fr);
-    }
-
-    .case-section--split .case-section__media {
-      margin-right: calc(var(--page-pad-right) * -1);
     }
   }
 
