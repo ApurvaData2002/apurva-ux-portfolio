@@ -107,6 +107,12 @@ Schema (`src/content.config.ts`):
   that is too small and the image looks soft. The 2x exports are the ceiling.
 - Alt text describes what the screens show. Decorative images use `alt=""`. Images with
   words in them (the About poster) repeat those words in the alt text.
+- Laterloft is the exception: it had no Figma mockups section, only raw 1080x2392 phone
+  screenshots, which fit none of the ratios above. `scripts/compose-mockups.mjs` builds
+  its images from them, reproducing the Figma treatment (dark bezel, brand-colour
+  gradient, same ratios). Re-run it after changing a screenshot:
+  `node scripts/compose-mockups.mjs "<screenshot folder>" laterloft`. The scenes at the
+  bottom of that file name each screenshot, so edit them to add or swap one.
 
 ## Drafts
 

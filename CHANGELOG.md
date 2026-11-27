@@ -3,6 +3,10 @@
 A short note for each release of the live site. Newest first.
 Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
+## v1.6.0 (2026-11-28)
+
+- New case study: Laterloft, an Android app for saving Instagram reels and YouTube Shorts into your own categories and finding them again. It leads the Projects page, so the other four each move down one place and the Next project links now run Laterloft, Spunk, Life, Event Management, Website redesign and back to Laterloft.
+
 ## v1.5.0 (2026-11-26)
 
 - The menu on tablet and phone now slides and fades open instead of snapping, and closes a little quicker than it opens.

@@ -1,0 +1,91 @@
+---
+title: "Laterloft: Save a reel, find it later"
+slug: laterloft
+summary: "An Android app for saving Instagram reels and YouTube Shorts into categories you make, then finding them again. I took it from a survey of nine savers through to a shipped 1.0."
+meta: "Mobile app · 2026"
+order: 1
+draft: false
+hero: /case-studies/laterloft/hero.png
+heroAlt: "Three phone screens: the Laterloft library with recently saved reels and categories, the Save to a category sheet with a title and keyword suggestions, and the viewer playing a saved reel."
+thumbnail: /case-studies/laterloft/hero.png
+roles:
+  - label: "My role"
+    text: "Product and design, end to end: research, scope, information architecture, flows, the design system, every screen, motion and the accessibility pass."
+  - label: "Team & context"
+    text: "A product of my own, 2026. I set the scope and made every product and design call; I used Claude to run the research, build the app and test it, and checked each step on my own phone."
+  - label: "Tools"
+    text: "Claude Design for the design system and screens, Expo and React Native for the build, Android."
+sections:
+  - eyebrow: "Problem"
+    heading: "Saving a reel is easy. Finding it again is not."
+    layout: stacked
+    paragraphs:
+      - "People save reels to come back to: a Figma trick, a prompt, a recipe. Instagram’s saved folder has no search, no names and no structure, so the thing you saved is effectively gone once the list gets long."
+      - "I ran a short survey of nine people who save in order to learn. Seven named finding a save again as the main problem, and Instagram, not YouTube, was where they saved from."
+      - "Nobody sorted by length or post date, and nobody deleted a reel once they had watched it. That removed two features I had planned, and added one I had not: search by keyword."
+  - eyebrow: "Research"
+    heading: "Twenty-nine apps, and the gap none of them filled"
+    layout: stacked
+    paragraphs:
+      - "I screened 29 saver apps, shortlisted 10 and tested four by hand on my own phone."
+      - "Albo plays reels in the app with no Instagram sign-in at all, which points to re-hosted copies. Quiki needs a sign-up and puts Instagram behind a paywall. Several of the rest were downloaders, or had gone from the Play Store in India."
+      - "The gap was an app that keeps your own saves, in folders you name, with search, and no feed to fall back into."
+  - eyebrow: "Constraints"
+    heading: "What the platforms would and would not allow"
+    layout: split
+    image: /case-studies/laterloft/section-03.png
+    imageMobile: /case-studies/laterloft/section-03-wide.png
+    alt: "Two phone screens: an Instagram reel with the Android share sheet open on Sharing link, and Laterloft’s Save to a category sheet with the title filled in from YouTube, category chips and suggested keywords."
+    paragraphs:
+      - "This product was shaped more by terms of service than by taste. Instagram’s terms ban automated collection and forbid modifying its embed. Meta’s oEmbed forbids keeping anything it returns. Cover images expire after about five days, so a copy is saved to the phone instead."
+      - "An Instagram reel only plays inside the app if you are already signed in to Instagram in that web view. So connecting Instagram became optional rather than required: without it a reel opens in Instagram, with it the reel plays in Laterloft."
+      - "YouTube’s API wants saved details refreshed every 30 days and an age confirmation before first use. Nothing of ours is ever drawn on top of a playing embed."
+  - eyebrow: "Decisions"
+    heading: "The card and the viewer, each picked from four"
+    layout: stacked
+    image: /case-studies/laterloft/section-04.png
+    alt: "Two phone screens: a category called Claude Shorts holding a grid of saved reels with the creator’s name on each cover, and the viewer with a reel playing above its title, creator, category and keyword chips."
+    paragraphs:
+      - "I drew four versions of the reel card and four of the viewer, then chose against the persona rather than by preference."
+      - "The card puts the creator’s name on the cover, because someone saving to learn recognises a reel by its thumbnail and who made it, not by a title they never wrote. Platform and length moved to a quieter line underneath."
+      - "The viewer treats a reel as a filed note: the video, then the title, the creator, the category and the keywords, all editable where they sit. Search ranks by best match rather than newest, because the point is to find one particular thing."
+  - eyebrow: "Craft"
+    heading: "Warm Attic, in light and dark"
+    layout: split
+    image: /case-studies/laterloft/section-05.png
+    imageMobile: /case-studies/laterloft/section-05-wide.png
+    alt: "The Laterloft library in light mode and dark mode: a search field, a Recently saved row of reel covers, and a grid of categories with cover images and reel counts."
+    paragraphs:
+      - "Three brand directions went on a board. Warm Attic won: Fraunces and Nunito Sans, a forest green and a honey."
+      - "It became a design system of 90 colour tokens and 19 components, light and dark. A script checks every colour pairing the components actually use against WCAG AA in both themes, and it runs on every change."
+      - "The rule I kept returning to: never colour alone. Status is carried by an icon and words as well, so it survives a colourblind reader and a dimmed screen."
+  - eyebrow: "Accessibility"
+    heading: "Motion you can switch off, and a layout for either hand"
+    layout: stacked
+    paragraphs:
+      - "Motion arrived in two tiers, 22 animations in all, each with a reduced-motion fallback. The app also carries its own Remove animations switch that takes effect immediately, for the many people who do not know Android has the setting."
+      - "Snackbars last three seconds, five with an action, and longer if Android’s Time to take action setting asks for it. A deleted cover waits over two minutes before it is really gone, so Undo always has something to undo."
+      - "A left-handed layout moves the add button and the row actions across. The top bar deliberately stays put: Back should never move, because that is the control you reach for without looking."
+  - eyebrow: "Outcome"
+    heading: "Shipped, and the parts I left out"
+    layout: stacked
+    paragraphs:
+      - "Laterloft is at 1.0.0 on Android. The library lives on the phone, there is a CSV export, and the privacy policy is written for Indian law."
+      - "laterloft.com is live with a waitlist. A closed test with twelve testers comes next, then the Play listing."
+      - "What I left out is written down rather than forgotten: a loop button only YouTube can support, keyword suggestions read from covers on the device, and an iPhone version."
+galleryHeading: "Screens and states"
+gallery:
+  - src: /case-studies/laterloft/gallery-01.png
+    alt: "The library: a search field, a Recently saved row of reel covers, and the categories you have made with a reel count on each."
+  - src: /case-studies/laterloft/gallery-02.png
+    alt: "A category called Claude Shorts holding three saved reels, with a count, a Sort control and the creator’s name on each cover."
+  - src: /case-studies/laterloft/gallery-03.png
+    alt: "Search across everything saved, showing one result with its keywords and the category it sits in."
+  - src: /case-studies/laterloft/gallery-04.png
+    alt: "The viewer: a reel playing above Laterloft’s own controls, then the title, the creator, the category chip and keyword chips."
+  - src: /case-studies/laterloft/gallery-05.png
+    alt: "The Save to a category sheet: a title taken from YouTube, category chips with one selected, and suggested keywords drawn from the title."
+  - src: /case-studies/laterloft/gallery-06.png
+    alt: "The same library in dark mode, with the categories grid and the add button."
+next: spunk
+---
