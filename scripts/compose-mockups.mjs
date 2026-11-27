@@ -32,6 +32,31 @@ const BEZEL = '#16181B';
 
 const shot = (name) => path.join(SRC, `${name}.png`);
 
+// Regions blurred out of a screenshot before it is used, in that screenshot's
+// own pixels. The Android share sheet puts real contacts, their photos and
+// their names in its top row, and none of that belongs on a public site.
+// Coordinates are for the 1080x2392 captures.
+const REDACT = {
+  'share screen': [{ left: 20, top: 1755, width: 610, height: 260 }],
+};
+
+// A screenshot with its redactions applied, blurred hard enough that nothing
+// survives. Cached: the same screenshot is used in several scenes.
+const sourceCache = new Map();
+async function source(name) {
+  if (sourceCache.has(name)) return sourceCache.get(name);
+  let buf = await sharp(shot(name)).png().toBuffer();
+  for (const area of REDACT[name] ?? []) {
+    const patch = await sharp(buf).extract(area).blur(24).png().toBuffer();
+    buf = await sharp(buf)
+      .composite([{ input: patch, left: area.left, top: area.top }])
+      .png()
+      .toBuffer();
+  }
+  sourceCache.set(name, buf);
+  return buf;
+}
+
 function background(w, h) {
   return Buffer.from(
     `<svg width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
@@ -54,7 +79,7 @@ async function phone(name, innerW) {
   const outerH = innerH + bz * 2;
   const rOut = rIn + bz;
 
-  const screen = await sharp(shot(name))
+  const screen = await sharp(await source(name))
     .resize(innerW, innerH, { fit: 'cover', position: 'top' })
     .composite([
       {
