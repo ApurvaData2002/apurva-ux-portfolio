@@ -78,6 +78,7 @@ Schema (`src/content.config.ts`):
 | `roles[]` | `{ label, text }`, the meta row under the hero |
 | `sections[]` | `{ eyebrow, heading, paragraphs[], layout: stacked \| split, image?, imageMobile?, alt? }` |
 | `galleryHeading?`, `gallery[]` | `{ src, alt }` square images |
+| `sections[].link?` | `{ href, label }`, an optional link out of a section. Always opens in a new tab, with "(opens in new tab)" added to its accessible name |
 | `next?` | Slug of the next case study (drafts skipped automatically) |
 
 - The number of sections varies (Life 7, Spunk 6). Always render from the array.
@@ -94,8 +95,10 @@ Schema (`src/content.config.ts`):
   number), `section-NN-wide.png` (16:9 mobile version of a split section),
   `gallery-01.png` … `gallery-06.png`.
 - Source: Figma file `personal-portfolio` (key `xspfhLJkxnzcJ65ZUJTrtk`), page **pictures**,
-  frames named "LIFE · …" / "SPUNK · …" in the "… mockups (auto)" sections. Export at **2x**
-  (hero/stacked 2016x1136, split 1072x800, gallery 640x640).
+  frames named "LIFE · …" / "SPUNK · …" in the "… mockups (auto)" sections. Export hero,
+  stacked and gallery at **2x** (2016x1136 and 640x640) and the **4:3 split frames at 3x**
+  (1608x1200). Split images are 3x because from 90em a split section's image is about
+  616 CSS px wide at 1440 and more on wider screens, so 2x would be short.
 - Frontmatter uses public URL paths ("/case-studies/life/hero.png"). `src/lib/images.ts`
   glob-imports `public/` so Astro's `<Image>` / `getImage` can output AVIF/WebP. Always go
   through `resolveImage()` and `CaseImage.astro`; never use raw `<img src="/...">` for content.
@@ -107,6 +110,19 @@ Schema (`src/content.config.ts`):
   that is too small and the image looks soft. The 2x exports are the ceiling.
 - Alt text describes what the screens show. Decorative images use `alt=""`. Images with
   words in them (the About poster) repeat those words in the alt text.
+- Two case studies are the exception, both built by `scripts/compose-mockups.mjs`
+  instead of Figma. It reproduces the Figma treatment (dark bezel or browser chrome on
+  a brand-colour gradient, the same ratios) and takes a screenshot folder and a slug:
+  - `laterloft`: raw 1080x2392 phone screenshots, which fit none of the ratios above.
+    `node scripts/compose-mockups.mjs "<screenshot folder>" laterloft`
+  - `laterloft-site`: screenshots of the live laterloft.com, captured by
+    `node scripts/capture-site.mjs <folder>` (desktop viewport, each desktop section,
+    and six mobile views; it dismisses the mobile demo overlay first, or every shot is
+    just the demo). Then `node scripts/compose-mockups.mjs <folder> laterloft-site`.
+    Re-run both after a site redesign rather than editing the composed images.
+  The scenes near the bottom of compose-mockups.mjs name each screenshot, so edit them
+  to add or swap one. `REDACT` there blurs regions out of a screenshot before use (the
+  Android share sheet's contact row).
 
 ## Drafts
 
@@ -238,6 +254,39 @@ ProjectTile, so a touch device never gets a stuck hover state.
 - Avatar: `alt=""`. Video (if added) never plays with reduced motion and has a pause control.
 - Reflow at 320px with no horizontal scroll; text resizes to 200% without breaking.
 - Don't name `<section>`s with aria-labelledby (avoids landmark clutter); headings do the job.
+
+## Case-study section layout
+
+A section with an image keeps the Figma layout: text on the left (440fr), image on
+the right (536fr) for split, or capped text with a full-width image under it for
+stacked.
+
+A section with **no** image used to be the same capped block of text with the rest of
+the content column empty beside it, which got worse as the copy got shorter. From
+64em up it is now one row on the same 440/536 grid: eyebrow and heading on the left,
+body on the right, so the eyebrow, heading and right-hand edge line up with the
+sections that do have images and one grid runs down the page. Below 64em it stacks as
+before.
+
+- The grid has a third `1fr` row that nothing is placed in. The body spans all three.
+  Without it, a body longer than the heading stretches the two rows it spans and the
+  heading drifts into the middle of the section (visible on Spunk and Life, which run
+  three paragraphs per section).
+- Consecutive image-less sections get a hairline between them (`+` sibling), so a run
+  of them reads as one list. Only between two of them, so it never doubles the divider
+  under the meta row or hangs under an image.
+- These rules must stay after the `max-width` rules above them in the file: same
+  specificity, so source order decides.
+
+From 90em up, a split section with an image changes again: the text column narrows to
+360fr and the image takes 616fr, so the screens get more room. The image stays inside
+the page padding, lining up with the hero and the stacked sections; an earlier version
+bled it into the padding to the edge of the viewport and that was rejected as not
+looking good. The aspect ratio is unchanged, so the box still has a known height and
+CLS stays 0. Held back to 90em because at 1024 the text column would be about 200px.
+**`split.sizes` in `src/lib/image-sizes.ts` carries the matching formula**
+(`(100vw - 464px) * 0.631`): change one without the other and the browser picks the
+wrong file.
 - Definition of done for a PR that changes UI: `npm run check`, `npm run audit:a11y` and
   `npm run audit:lighthouse` pass; keyboard-only pass; NVDA/VoiceOver pass for Home and one
   case study before merging.

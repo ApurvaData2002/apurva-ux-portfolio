@@ -3,6 +3,13 @@
 A short note for each release of the live site. Newest first.
 Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
+## v1.6.0 (2026-11-28)
+
+- New case study: Laterloft.com, the waitlist site for the Laterloft app. It sits second, after the app itself.
+- New case study: Laterloft, an Android app for saving Instagram reels and YouTube Shorts into your own categories and finding them again. It leads the Projects page, so the other four each move down one place and the Next project links now run Laterloft, Spunk, Life, Event Management, Website redesign and back to Laterloft.
+- Every case study is shorter. The writing is down by about two thirds, to one or two lines a section, each one carrying a decision or a finding instead of a recap.
+- Case-study sections without a picture now run the full width of the page instead of sitting in a narrow column with empty space beside them, and from 1440px up the pictures beside the text are larger.
+
 ## v1.5.0 (2026-11-26)
 
 - The menu on tablet and phone now slides and fades open instead of snapping, and closes a little quicker than it opens.

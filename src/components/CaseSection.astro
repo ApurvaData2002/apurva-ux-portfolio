@@ -16,9 +16,11 @@ interface Props {
   image?: string;
   imageMobile?: string;
   alt?: string;
+  /** Optional link out, e.g. to the live product. Opens in a new tab. */
+  link?: { href: string; label: string };
 }
 
-const { number, eyebrow, heading, paragraphs, layout, image, imageMobile, alt = '' } = Astro.props;
+const { number, eyebrow, heading, paragraphs, layout, image, imageMobile, alt = '', link } = Astro.props;
 const id = `section-${String(number).padStart(2, '0')}`;
 const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
 ---
@@ -29,6 +31,18 @@ const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
     <h2 id={id} class="t-h2">{heading}</h2>
     <div class="case-section__body t-body">
       {paragraphs.map((p) => <p>{p}</p>)}
+      {
+        link && (
+          <p class="case-section__link">
+            {/* The visible label stays the start of the accessible name, so it
+                still satisfies "label in name" (WCAG 2.5.3). */}
+            <a href={link.href} target="_blank" rel="noopener noreferrer">
+              {link.label}
+              <span class="sr-only"> (opens in new tab)</span>
+            </a>
+          </p>
+        )
+      }
     </div>
   </div>
   {
@@ -69,6 +83,21 @@ const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
     display: flex;
     flex-direction: column;
     gap: var(--space-16);
+  }
+
+  /* Underlined rather than colour alone, so it reads as a link without relying
+     on the green. Same hover language as the nav and the Next project link. */
+  .case-section__link a {
+    color: var(--text-accent);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .case-section__link a:hover {
+      color: var(--text-primary);
+    }
   }
 
   /* Mobile image box: 361x200 in the frames. overflow keeps the box at its
@@ -117,8 +146,65 @@ const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
     }
   }
 
+  /* From 1440 up a split section gives the screens more room: a narrower text
+     column against a wider image. The image stays inside the page padding,
+     lining up with the hero and the stacked sections. Held back to 90em
+     because at 1024 the text column would be about 200px wide. The aspect
+     ratio is unchanged, so the box still has a known height and CLS stays at
+     0. `sizes` in src/lib/image-sizes.ts has the matching formula: change one
+     and the image is served at the wrong size. */
+  @media (min-width: 90em) {
+    .case-section--split.case-section--has-image {
+      grid-template-columns: minmax(0, 360fr) minmax(0, 616fr);
+    }
+  }
+
   /* A split section without an image reads like a stacked one. */
   .case-section--split:not(.case-section--has-image) .case-section__text {
     max-width: 640px;
+  }
+
+  /* A section with no image used to be a 640px block of text with the rest of
+     the content column empty beside it, which got worse as the copy got
+     shorter. On desktop it now runs across the full width as one row:
+     eyebrow, heading, body. Pattern from editorial process lists (Craft
+     Agency, Trawelt on Mobbin). Must stay after the max-width rules above,
+     which have the same specificity. */
+  @media (min-width: 64em) {
+    .case-section:not(.case-section--has-image) .case-section__text {
+      display: grid;
+      /* The same 440/536 split a section with an image uses, so the eyebrow
+         and heading stay flush left and the body starts exactly where an
+         image would. One grid runs down the whole page. */
+      grid-template-columns: minmax(0, 440fr) minmax(0, 536fr);
+      /* Third row takes up the slack. Without it a long body stretches the two
+         rows it spans and the heading drifts into the middle of the section. */
+      grid-template-rows: auto auto 1fr;
+      align-items: start;
+      column-gap: var(--space-32);
+      row-gap: var(--space-16);
+      max-width: none;
+    }
+
+    .case-section:not(.case-section--has-image) .case-section__eyebrow {
+      grid-area: 1 / 1;
+    }
+
+    .case-section:not(.case-section--has-image) .case-section__text > h2 {
+      grid-area: 2 / 1;
+    }
+
+    .case-section:not(.case-section--has-image) .case-section__body {
+      grid-area: 1 / 2 / 4 / 3;
+    }
+
+    /* A rule between two rows in a row, so a run of them reads as one list.
+       Only between two of them, so it never doubles the divider under the meta
+       row or hangs under an image. */
+    .case-section:not(.case-section--has-image)
+      + .case-section:not(.case-section--has-image) {
+      border-top: 1px solid var(--border-divider);
+      padding-top: var(--space-32);
+    }
   }
 </style>

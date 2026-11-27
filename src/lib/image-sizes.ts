@@ -11,10 +11,15 @@ export const imageSizes = {
     sizes:
       '(min-width: 64em) calc(100vw - 432px), (min-width: 48em) calc(100vw - 64px), calc(100vw - 32px)',
   },
-  /** Split sections: 536 / 336 wide (mobile uses the wide image instead). */
+  /**
+   * Split sections: 336 wide on tablet, 536 from 64em, and from 90em the wider
+   * image column of the Linear-style split (see CaseSection), which is
+   * 616/976 = 0.631 of the grid area.
+   */
   split: {
-    widths: [400, 536, 800, 1072],
-    sizes: '(min-width: 64em) calc((100vw - 464px) * 0.55), calc((100vw - 96px) / 2)',
+    widths: [400, 536, 800, 1072, 1600],
+    sizes:
+      '(min-width: 90em) calc((100vw - 464px) * 0.631), (min-width: 64em) calc((100vw - 464px) * 0.55), calc((100vw - 96px) / 2)',
   },
   /** Mobile version of a split section (the 16:9 "wide" export). */
   splitMobile: {
