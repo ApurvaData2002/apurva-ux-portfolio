@@ -106,13 +106,54 @@ async function phone(name, innerW) {
   return { img, w: outerW, h: outerH };
 }
 
+// One browser window: a page screenshot under a light toolbar with the three
+// dots and an address pill, matching the "browser · …" frames the Event
+// Management and Website redesign mockups use in Figma.
+async function browserFrame(file, innerW, contentH) {
+  const bar = Math.round(innerW * 0.0333);
+  const r = Math.round(innerW * 0.012);
+  const dot = Math.max(4, Math.round(innerW * 0.0095));
+  const pillW = Math.round(innerW * 0.31);
+  const pillH = Math.max(6, Math.round(innerW * 0.0167));
+
+  const page = await sharp(file)
+    .resize({ width: innerW })
+    .extract({ left: 0, top: 0, width: innerW, height: contentH })
+    .toBuffer();
+
+  const chrome = Buffer.from(
+    `<svg width="${innerW}" height="${bar + contentH}" xmlns="http://www.w3.org/2000/svg">
+       <rect width="${innerW}" height="${bar + contentH}" rx="${r}" ry="${r}" fill="#DDDCD6"/>
+       <circle cx="${bar * 0.5}" cy="${bar * 0.5}" r="${dot / 2}" fill="#B9B7AE"/>
+       <circle cx="${bar * 1.0}" cy="${bar * 0.5}" r="${dot / 2}" fill="#B9B7AE"/>
+       <circle cx="${bar * 1.5}" cy="${bar * 0.5}" r="${dot / 2}" fill="#B9B7AE"/>
+       <rect x="${(innerW - pillW) / 2}" y="${(bar - pillH) / 2}" width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="#C9C7BF"/>
+     </svg>`,
+  );
+
+  const img = await sharp(chrome)
+    .composite([{ input: page, left: 0, top: bar }])
+    .png()
+    .toBuffer();
+
+  // Round the bottom corners too, which the page screenshot squares off.
+  const mask = Buffer.from(
+    `<svg width="${innerW}" height="${bar + contentH}"><rect width="${innerW}" height="${bar + contentH}" rx="${r}" ry="${r}" fill="#fff"/></svg>`,
+  );
+  const out = await sharp(img).composite([{ input: mask, blend: 'dest-in' }]).png().toBuffer();
+  return { img: out, w: innerW, h: bar + contentH };
+}
+
 // Lay phones on a background. Each entry: { name, innerW, x, y } where x/y are
 // the top-left of the bezel; y may be negative or run past the canvas so the
 // phone bleeds off the edge, as the Figma frames do.
 async function scene(file, w, h, phones) {
   const parts = [];
   for (const p of phones) {
-    const { img, w: pw, h: ph } = await phone(p.name, p.innerW);
+    const { img, w: pw, h: ph } =
+      p.kind === 'browser'
+        ? await browserFrame(path.join(SRC, p.file), p.innerW, p.contentH)
+        : await phone(p.name, p.innerW);
     // A phone may run past the canvas (the gallery squares show only the top of
     // the screen). sharp refuses to composite anything bigger than the canvas,
     // so cut the phone down to the part that actually lands on it.
@@ -138,52 +179,87 @@ async function scene(file, w, h, phones) {
 fs.mkdirSync(OUT, { recursive: true });
 console.log(`Case-study images for ${SLUG}:`);
 
-// Hero, 16:9. Two phones flanking a larger centre one that bleeds off the
-// bottom, mirroring the SPUNK and LIFE heroes.
-await scene('hero.png', 2016, 1136, [
-  { name: 'library light mode', innerW: 402, x: 283, y: 150 },
-  { name: 'save sheet', innerW: 452, x: 770, y: 70 },
-  { name: 'player screen', innerW: 402, x: 1305, y: 150 },
-]);
+if (SLUG === 'laterloft-site') {
+  // The waitlist site: browser windows on the same gradient, the way the
+  // Event Management and Website redesign mockups frame a web page. Source
+  // screenshots come from scripts/capture-site.mjs.
+  await scene('hero.png', 2016, 1136, [
+    { kind: 'browser', file: 'desktop-hero.png', innerW: 1230, contentH: 769, x: 190, y: 162 },
+    { name: 'm-hero', innerW: 286, x: 1540, y: 258 },
+  ]);
 
-// 03 Constraints, split 4:3 + a 16:9 version for phones.
-// 1608x1200, not the 1072x800 the other case studies use: from 90em up a split
-// image is ~760 CSS px wide, so 2x needs about 1520.
-await scene('section-03.png', 1608, 1200, [
-  { name: 'share screen', innerW: 534, x: 198, y: 90 },
-  { name: 'save sheet', innerW: 534, x: 840, y: 90 },
-]);
-await scene('section-03-wide.png', 2016, 1136, [
-  { name: 'share screen', innerW: 398, x: 552, y: 110 },
-  { name: 'save sheet', innerW: 398, x: 1040, y: 110 },
-]);
+  await scene('section-02.png', 1608, 1200, [
+    { kind: 'browser', file: 'sec-compare.png', innerW: 1360, contentH: 557, x: 124, y: 279 },
+  ]);
+  await scene('section-02-wide.png', 2016, 1136, [
+    { kind: 'browser', file: 'sec-compare.png', innerW: 1700, contentH: 696, x: 158, y: 191 },
+  ]);
 
-// 04 Decisions, stacked 16:9: the card and the viewer side by side.
-await scene('section-04.png', 2016, 1136, [
-  { name: 'category screen', innerW: 398, x: 552, y: 110 },
-  { name: 'player screen', innerW: 398, x: 1040, y: 110 },
-]);
+  await scene('section-04.png', 2016, 1136, [
+    { kind: 'browser', file: 'sec-how.png', innerW: 1700, contentH: 685, x: 158, y: 197 },
+  ]);
 
-// 05 Design system, split 4:3 + 16:9: the same screen light and dark.
-await scene('section-05.png', 1608, 1200, [
-  { name: 'library light mode', innerW: 534, x: 198, y: 90 },
-  { name: 'library dark mode', innerW: 534, x: 840, y: 90 },
-]);
-await scene('section-05-wide.png', 2016, 1136, [
-  { name: 'library light mode', innerW: 398, x: 552, y: 110 },
-  { name: 'library dark mode', innerW: 398, x: 1040, y: 110 },
-]);
+  await scene('section-05.png', 1608, 1200, [
+    { kind: 'browser', file: 'sec-action.png', innerW: 1360, contentH: 811, x: 124, y: 152 },
+  ]);
+  await scene('section-05-wide.png', 2016, 1136, [
+    { kind: 'browser', file: 'sec-action.png', innerW: 1700, contentH: 1013, x: 158, y: 32 },
+  ]);
 
-// Gallery, six 1:1 squares. The phone overflows the bottom, as in the Figma
-// gallery frames, so the square shows the top of the screen.
-const gallery = [
-  'library light mode',
-  'category screen',
-  'search',
-  'player screen',
-  'save sheet',
-  'library dark mode',
-];
-for (const [i, name] of gallery.entries()) {
-  await scene(`gallery-0${i + 1}.png`, 640, 640, [{ name, innerW: 406, x: 104, y: 72 }]);
+  // Gallery: the same page on a phone, one square per section.
+  const views = ['m-hero', 'm-compare', 'm-how', 'm-action', 'm-privacy', 'm-questions'];
+  for (const [i, name] of views.entries()) {
+    await scene(`gallery-0${i + 1}.png`, 640, 640, [{ name, innerW: 406, x: 104, y: 72 }]);
+  }
+} else {
+
+  // Hero, 16:9. Two phones flanking a larger centre one that bleeds off the
+  // bottom, mirroring the SPUNK and LIFE heroes.
+  await scene('hero.png', 2016, 1136, [
+    { name: 'library light mode', innerW: 402, x: 283, y: 150 },
+    { name: 'save sheet', innerW: 452, x: 770, y: 70 },
+    { name: 'player screen', innerW: 402, x: 1305, y: 150 },
+  ]);
+
+  // 03 Constraints, split 4:3 + a 16:9 version for phones.
+  // 1608x1200, not the 1072x800 the other case studies use: from 90em up a split
+  // image is ~760 CSS px wide, so 2x needs about 1520.
+  await scene('section-03.png', 1608, 1200, [
+    { name: 'share screen', innerW: 534, x: 198, y: 90 },
+    { name: 'save sheet', innerW: 534, x: 840, y: 90 },
+  ]);
+  await scene('section-03-wide.png', 2016, 1136, [
+    { name: 'share screen', innerW: 398, x: 552, y: 110 },
+    { name: 'save sheet', innerW: 398, x: 1040, y: 110 },
+  ]);
+
+  // 04 Decisions, stacked 16:9: the card and the viewer side by side.
+  await scene('section-04.png', 2016, 1136, [
+    { name: 'category screen', innerW: 398, x: 552, y: 110 },
+    { name: 'player screen', innerW: 398, x: 1040, y: 110 },
+  ]);
+
+  // 05 Design system, split 4:3 + 16:9: the same screen light and dark.
+  await scene('section-05.png', 1608, 1200, [
+    { name: 'library light mode', innerW: 534, x: 198, y: 90 },
+    { name: 'library dark mode', innerW: 534, x: 840, y: 90 },
+  ]);
+  await scene('section-05-wide.png', 2016, 1136, [
+    { name: 'library light mode', innerW: 398, x: 552, y: 110 },
+    { name: 'library dark mode', innerW: 398, x: 1040, y: 110 },
+  ]);
+
+  // Gallery, six 1:1 squares. The phone overflows the bottom, as in the Figma
+  // gallery frames, so the square shows the top of the screen.
+  const gallery = [
+    'library light mode',
+    'category screen',
+    'search',
+    'player screen',
+    'save sheet',
+    'library dark mode',
+  ];
+  for (const [i, name] of gallery.entries()) {
+    await scene(`gallery-0${i + 1}.png`, 640, 640, [{ name, innerW: 406, x: 104, y: 72 }]);
+  }
 }
