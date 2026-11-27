@@ -95,8 +95,10 @@ Schema (`src/content.config.ts`):
   number), `section-NN-wide.png` (16:9 mobile version of a split section),
   `gallery-01.png` … `gallery-06.png`.
 - Source: Figma file `personal-portfolio` (key `xspfhLJkxnzcJ65ZUJTrtk`), page **pictures**,
-  frames named "LIFE · …" / "SPUNK · …" in the "… mockups (auto)" sections. Export at **2x**
-  (hero/stacked 2016x1136, split 1072x800, gallery 640x640).
+  frames named "LIFE · …" / "SPUNK · …" in the "… mockups (auto)" sections. Export hero,
+  stacked and gallery at **2x** (2016x1136 and 640x640) and the **4:3 split frames at 3x**
+  (1608x1200). Split images are 3x because from 90em a split section's image bleeds into
+  the page padding and is about 760 CSS px wide at 1440, so 2x would be short.
 - Frontmatter uses public URL paths ("/case-studies/life/hero.png"). `src/lib/images.ts`
   glob-imports `public/` so Astro's `<Image>` / `getImage` can output AVIF/WebP. Always go
   through `resolveImage()` and `CaseImage.astro`; never use raw `<img src="/...">` for content.
@@ -268,6 +270,14 @@ before.
   under the meta row or hangs under an image.
 - These rules must stay after the `max-width` rules above them in the file: same
   specificity, so source order decides.
+
+From 90em up, a split section with an image changes again: the text column narrows to
+360fr, the image takes 616fr and bleeds into the page's 144px right padding so it
+reaches the edge of the viewport. The aspect ratio is unchanged, so the box still has a
+known height and CLS stays 0. It is held back to 90em because at 1024 the text column
+would be about 200px. **`split.sizes` in `src/lib/image-sizes.ts` carries the matching
+formula** (`(100vw - 464px) * 0.631 + 144px`): change one without the other and the
+browser picks the wrong file.
 - Definition of done for a PR that changes UI: `npm run check`, `npm run audit:a11y` and
   `npm run audit:lighthouse` pass; keyboard-only pass; NVDA/VoiceOver pass for Home and one
   case study before merging.

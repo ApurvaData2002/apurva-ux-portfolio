@@ -147,9 +147,11 @@ await scene('hero.png', 2016, 1136, [
 ]);
 
 // 03 Constraints, split 4:3 + a 16:9 version for phones.
-await scene('section-03.png', 1072, 800, [
-  { name: 'share screen', innerW: 356, x: 132, y: 60 },
-  { name: 'save sheet', innerW: 356, x: 560, y: 60 },
+// 1608x1200, not the 1072x800 the other case studies use: from 90em up a split
+// image is ~760 CSS px wide, so 2x needs about 1520.
+await scene('section-03.png', 1608, 1200, [
+  { name: 'share screen', innerW: 534, x: 198, y: 90 },
+  { name: 'save sheet', innerW: 534, x: 840, y: 90 },
 ]);
 await scene('section-03-wide.png', 2016, 1136, [
   { name: 'share screen', innerW: 398, x: 552, y: 110 },
@@ -163,9 +165,9 @@ await scene('section-04.png', 2016, 1136, [
 ]);
 
 // 05 Design system, split 4:3 + 16:9: the same screen light and dark.
-await scene('section-05.png', 1072, 800, [
-  { name: 'library light mode', innerW: 356, x: 132, y: 60 },
-  { name: 'library dark mode', innerW: 356, x: 560, y: 60 },
+await scene('section-05.png', 1608, 1200, [
+  { name: 'library light mode', innerW: 534, x: 198, y: 90 },
+  { name: 'library dark mode', innerW: 534, x: 840, y: 90 },
 ]);
 await scene('section-05-wide.png', 2016, 1136, [
   { name: 'library light mode', innerW: 398, x: 552, y: 110 },
