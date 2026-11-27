@@ -1,4 +1,8 @@
 @import "@fontsource-variable/inter/wght.css";
+/* Fraunces for headings. Every heading style uses weight 500 and nothing
+   interpolates, so this is the single static latin cut (17kB) rather than the
+   variable font (65kB), which cost 0.4s of LCP on mobile for nothing. */
+@import "@fontsource/fraunces/latin-500.css";
 @import "./tokens.css";
 
 /* ---- Reset ---- */
@@ -222,4 +226,31 @@ html[data-motion] [data-reveal] {
 html[data-motion] [data-reveal][data-revealed] {
   opacity: 1;
   transform: none;
+}
+
+/* ---- View transitions ---- */
+
+/* Browsers do not apply prefers-reduced-motion to view transitions themselves,
+   so anyone who asked for less motion gets a plain cut between pages. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* Hold page transitions to the same timings as everything else. The named
+   groups (a tile's thumbnail and title morphing into the case-study hero and
+   H1, see ProjectTile and CaseHero) get the slow duration because they travel
+   a long way; the whole-page cross-fade is quicker. */
+::view-transition-group(*) {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-out);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-base);
+  animation-timing-function: var(--ease-out);
 }

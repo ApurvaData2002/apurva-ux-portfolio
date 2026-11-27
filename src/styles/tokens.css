@@ -56,7 +56,10 @@
   --space-144: 144px;
 
   /* ---- Typography primitives (Typography collection) ---- */
-  --font-heading: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Headings carry the serif; body, UI and anything small stay on Inter. The
+     two tokens pointed at the same font until now, so the split existed but
+     did nothing. */
+  --font-heading: "Fraunces", Georgia, "Times New Roman", serif;
   --font-body: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-weight-regular: 400;
   --font-weight-medium: 500;

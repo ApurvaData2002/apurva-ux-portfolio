@@ -29,7 +29,7 @@ no CSS framework. Node 22.12+.
 | `npm run preview` | Serve `dist/` locally |
 | `npm run check` | Type check (`astro check`), must report 0 errors |
 | `npm run audit:a11y` | axe WCAG 2.2 AA + keyboard, focus, menu, target size, 200% text, 320px reflow, reduced motion, on every page at 1440/768/393. Needs `npm run preview` running. `BASE_URL=` and `PAGES=/a,/b` to target others |
-| `npm run audit:lighthouse` | Lighthouse perf/a11y/best-practices/SEO, mobile + desktop. Targets: perf 90+, a11y 95+ (currently 100 everywhere) |
+| `npm run audit:lighthouse` | Lighthouse perf/a11y/best-practices/SEO, mobile + desktop. Targets: perf 90+, a11y 95+. Currently a11y/best-practices/SEO 100 and perf 100 on desktop; perf 99 on mobile since the serif and the view-transition router landed |
 
 On Windows Git Bash, prefix paths in env vars with `MSYS_NO_PATHCONV=1` (e.g. `PAGES=/404`).
 
@@ -175,6 +175,50 @@ Vite emitted in `_astro/`, then fails the build if any HTML links to it.
 `--space-16` separates the two. Neither gets padding of its own: `.page--index` in
 BaseLayout already applies the side padding, so the intro lines up with the grid at every
 breakpoint. Don't hardcode the desktop 40px here, or it misaligns on tablet and mobile.
+
+## Typography
+
+Two faces. `--font-heading` is **Fraunces** (serif), `--font-body` is **Inter**. Both
+tokens pointed at Inter until Nov 2026, so the split existed but did nothing and every
+heading was Inter 500.
+
+Fraunces is the **static latin 500 cut** (`@fontsource/fraunces/latin-500.css`, 17kB),
+not the variable font. Every heading style uses weight 500 and nothing interpolates,
+and the variable file (65kB) cost 0.4s of mobile LCP for nothing. It is preloaded in
+BaseLayout beside Inter. If a heading ever needs a second weight, add that static cut
+rather than switching to the variable font.
+
+The serif reaches `.t-display`, `.t-h1`, `.t-h2`, `.t-h3`, `.t-brand` and the project
+tile title. Body, lead, eyebrow, nav, buttons and anything small stay on Inter: the
+serif is for statements, not for interface text.
+
+## View transitions
+
+`<ClientRouter />` is in BaseLayout, so navigation swaps the body on the client instead
+of reloading. A project tile's thumbnail and title morph into the case-study hero image
+and H1: ProjectTile and CaseHero put the same `transition:name` on each pair
+(`case-hero-<slug>` and `case-title-<slug>`), which is why CaseHero takes a `slug` prop
+it otherwise has no use for. Names must be unique per page, hence the slug.
+
+Three things this breaks if you forget them:
+
+- **Scripts only evaluate once.** A module script does not re-run when the body is
+  swapped, so anything that binds to elements goes dead after the first navigation.
+  Every component script is wrapped in `onEachPage` (`src/lib/page-init.ts`), which
+  re-runs it on `astro:page-load`.
+- **`onEachPage` hands you an AbortSignal, and every `addEventListener` must take it.**
+  It runs the setup twice on a first load (once at module evaluation, once on
+  `astro:page-load`) and aborts the previous run each time. Without the signal the
+  handlers stack: two click listeners on the menu toggle meant one click opened and
+  immediately closed it, which the a11y audit caught and a hand test did not.
+- **The swap copies `<html>`'s attributes from the incoming page**, which strips
+  `data-motion`. BaseLayout's inline script re-applies it on `astro:after-swap`;
+  without that, every scroll reveal and the homepage entrance stop running after the
+  first navigation while still looking fine on a hard load.
+
+Browsers do not apply `prefers-reduced-motion` to view transitions, so `global.css`
+cancels them under that query. Page transitions use `--duration-base`, the morphing
+pairs `--duration-slow`.
 
 ## Motion
 

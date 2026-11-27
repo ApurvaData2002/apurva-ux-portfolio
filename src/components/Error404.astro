@@ -64,25 +64,29 @@ import AvatarWave from './AvatarWave.astro';
 </style>
 
 <script>
-  const SHOW_FOR = 1600;
+  import { onEachPage } from '../lib/page-init';
 
-  for (const el of document.querySelectorAll<HTMLElement>('[data-error-404]')) {
-    let timer = 0;
-    const set = (state: 'default' | 'morse') => (el.dataset.state = state);
+  onEachPage((signal) => {
+    const SHOW_FOR = 1600;
 
-    el.addEventListener('pointerenter', (e) => {
-      if (e.pointerType === 'mouse') set('morse');
-    });
-    el.addEventListener('pointerleave', (e) => {
-      if (e.pointerType === 'mouse') set('default');
-    });
-    // Touch: tap shows the Morse for 1.6 s; tap again to dismiss.
-    el.addEventListener('pointerup', (e) => {
-      if (e.pointerType === 'mouse') return;
-      clearTimeout(timer);
-      if (el.dataset.state === 'morse') return set('default');
-      set('morse');
-      timer = window.setTimeout(() => set('default'), SHOW_FOR);
-    });
-  }
+    for (const el of document.querySelectorAll<HTMLElement>('[data-error-404]')) {
+      let timer = 0;
+      const set = (state: 'default' | 'morse') => (el.dataset.state = state);
+
+      el.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'mouse') set('morse');
+      }, { signal });
+      el.addEventListener('pointerleave', (e) => {
+        if (e.pointerType === 'mouse') set('default');
+      }, { signal });
+      // Touch: tap shows the Morse for 1.6 s; tap again to dismiss.
+      el.addEventListener('pointerup', (e) => {
+        if (e.pointerType === 'mouse') return;
+        clearTimeout(timer);
+        if (el.dataset.state === 'morse') return set('default');
+        set('morse');
+        timer = window.setTimeout(() => set('default'), SHOW_FOR);
+      }, { signal });
+    }
+  });
 </script>

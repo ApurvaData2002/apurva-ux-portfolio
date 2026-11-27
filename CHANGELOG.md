@@ -3,6 +3,12 @@
 A short note for each release of the live site. Newest first.
 Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
+## v1.7.0 (2026-11-28)
+
+- Headings are now set in Fraunces, a serif, against Inter for everything else. The site had been one typeface throughout.
+- Clicking a project card now carries its picture and title into the case study instead of cutting to a new page, and moving between pages no longer reloads the whole site.
+- All of it is off for anyone whose system is set to reduce motion.
+
 ## v1.6.0 (2026-11-28)
 
 - New case study: Laterloft.com, the waitlist site for the Laterloft app. It sits second, after the app itself.

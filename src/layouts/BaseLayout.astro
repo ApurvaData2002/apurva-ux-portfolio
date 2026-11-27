@@ -3,10 +3,12 @@
 // MenuDrawer (tablet/mobile), <main>, and a <footer> ending in BackToTop.
 import '../styles/global.css';
 import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import frauncesLatin from '@fontsource/fraunces/files/fraunces-latin-500-normal.woff2?url';
 import NavSidebar from '../components/NavSidebar.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import BackToTop from '../components/BackToTop.astro';
 import ContactFooter from '../components/ContactFooter.astro';
+import { ClientRouter } from 'astro:transitions';
 import { site, type NavKey } from '../data/site';
 
 interface Props {
@@ -63,6 +65,8 @@ const ogImage = Astro.site && image ? new URL(image, Astro.site).href : undefine
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
+    {/* Headings are above the fold on every page, so the serif is preloaded too. */}
+    <link rel="preload" href={frauncesLatin} as="font" type="font/woff2" crossorigin />
     {canonical && <link rel="canonical" href={canonical} />}
     {noindex && <meta name="robots" content="noindex" />}
     <meta property="og:type" content="website" />
@@ -71,6 +75,9 @@ const ogImage = Astro.site && image ? new URL(image, Astro.site).href : undefine
     {canonical && <meta property="og:url" content={canonical} />}
     {ogImage && <meta property="og:image" content={ogImage} />}
     <meta name="theme-color" content="#fafaf7" />
+    {/* Swaps pages on the client so the browser can animate between them. Every
+        component script re-runs through onEachPage (src/lib/page-init.ts). */}
+    <ClientRouter />
     <script is:inline>
       // Entrance and scroll-reveal animations are opt-in, and this attribute is
       // the only thing their CSS keys off. It is set here, before the first
@@ -85,6 +92,10 @@ const ogImage = Astro.site && image ? new URL(image, Astro.site).href : undefine
         apply();
         // Turning "reduce motion" on mid-visit reveals anything still waiting.
         query.addEventListener('change', apply);
+        // The view-transition router copies <html>'s attributes from the page
+        // it swaps in, which drops data-motion. Without this, every reveal and
+        // the homepage entrance stop running after the first navigation.
+        document.addEventListener('astro:after-swap', apply);
       })();
     </script>
   </head>

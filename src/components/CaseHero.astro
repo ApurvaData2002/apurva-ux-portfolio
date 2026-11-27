@@ -6,6 +6,8 @@ import Divider from './Divider.astro';
 import { imageSizes } from '../lib/image-sizes';
 
 interface Props {
+  /** Used to pair the hero image and title with the homepage tile that morphs into them. */
+  slug: string;
   title: string;
   summary: string;
   hero: string;
@@ -13,15 +15,15 @@ interface Props {
   roles: { label: string; text: string }[];
 }
 
-const { title, summary, hero, heroAlt, roles } = Astro.props;
+const { slug, title, summary, hero, heroAlt, roles } = Astro.props;
 ---
 
 <header class="case-hero">
   <div class="case-hero__intro">
-    <h1 class="t-h1">{title}</h1>
+    <h1 class="t-h1" transition:name={`case-title-${slug}`}>{title}</h1>
     <p class="t-lead case-hero__summary">{summary}</p>
   </div>
-  <div class="case-hero__media">
+  <div class="case-hero__media" transition:name={`case-hero-${slug}`}>
     <CaseImage
       src={hero}
       alt={heroAlt}

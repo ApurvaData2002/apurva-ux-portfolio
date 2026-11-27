@@ -66,13 +66,17 @@
 </style>
 
 <script>
-  for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-back-to-top]')) {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
-      document.getElementById('top')?.focus({ preventScroll: true });
-      history.replaceState(null, '', location.pathname + location.search);
-    });
-  }
+  import { onEachPage } from '../lib/page-init';
+
+  onEachPage((signal) => {
+    for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-back-to-top]')) {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+        document.getElementById('top')?.focus({ preventScroll: true });
+        history.replaceState(null, '', location.pathname + location.search);
+      }, { signal });
+    }
+  });
 </script>
