@@ -245,6 +245,29 @@ ProjectTile, so a touch device never gets a stuck hover state.
 - Avatar: `alt=""`. Video (if added) never plays with reduced motion and has a pause control.
 - Reflow at 320px with no horizontal scroll; text resizes to 200% without breaking.
 - Don't name `<section>`s with aria-labelledby (avoids landmark clutter); headings do the job.
+
+## Case-study section layout
+
+A section with an image keeps the Figma layout: text on the left (440fr), image on
+the right (536fr) for split, or capped text with a full-width image under it for
+stacked.
+
+A section with **no** image used to be the same capped block of text with the rest of
+the content column empty beside it, which got worse as the copy got shorter. From
+64em up it is now one row on the same 440/536 grid: eyebrow and heading on the left,
+body on the right, so the eyebrow, heading and right-hand edge line up with the
+sections that do have images and one grid runs down the page. Below 64em it stacks as
+before.
+
+- The grid has a third `1fr` row that nothing is placed in. The body spans all three.
+  Without it, a body longer than the heading stretches the two rows it spans and the
+  heading drifts into the middle of the section (visible on Spunk and Life, which run
+  three paragraphs per section).
+- Consecutive image-less sections get a hairline between them (`+` sibling), so a run
+  of them reads as one list. Only between two of them, so it never doubles the divider
+  under the meta row or hangs under an image.
+- These rules must stay after the `max-width` rules above them in the file: same
+  specificity, so source order decides.
 - Definition of done for a PR that changes UI: `npm run check`, `npm run audit:a11y` and
   `npm run audit:lighthouse` pass; keyboard-only pass; NVDA/VoiceOver pass for Home and one
   case study before merging.
