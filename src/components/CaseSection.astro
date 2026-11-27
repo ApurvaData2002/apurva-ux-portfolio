@@ -16,9 +16,11 @@ interface Props {
   image?: string;
   imageMobile?: string;
   alt?: string;
+  /** Optional link out, e.g. to the live product. Opens in a new tab. */
+  link?: { href: string; label: string };
 }
 
-const { number, eyebrow, heading, paragraphs, layout, image, imageMobile, alt = '' } = Astro.props;
+const { number, eyebrow, heading, paragraphs, layout, image, imageMobile, alt = '', link } = Astro.props;
 const id = `section-${String(number).padStart(2, '0')}`;
 const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
 ---
@@ -29,6 +31,18 @@ const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
     <h2 id={id} class="t-h2">{heading}</h2>
     <div class="case-section__body t-body">
       {paragraphs.map((p) => <p>{p}</p>)}
+      {
+        link && (
+          <p class="case-section__link">
+            {/* The visible label stays the start of the accessible name, so it
+                still satisfies "label in name" (WCAG 2.5.3). */}
+            <a href={link.href} target="_blank" rel="noopener noreferrer">
+              {link.label}
+              <span class="sr-only"> (opens in new tab)</span>
+            </a>
+          </p>
+        )
+      }
     </div>
   </div>
   {
@@ -69,6 +83,21 @@ const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
     display: flex;
     flex-direction: column;
     gap: var(--space-16);
+  }
+
+  /* Underlined rather than colour alone, so it reads as a link without relying
+     on the green. Same hover language as the nav and the Next project link. */
+  .case-section__link a {
+    color: var(--text-accent);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .case-section__link a:hover {
+      color: var(--text-primary);
+    }
   }
 
   /* Mobile image box: 361x200 in the frames. overflow keeps the box at its

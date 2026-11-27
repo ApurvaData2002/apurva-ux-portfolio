@@ -23,6 +23,16 @@ const section = z
     /** Split only: the 16:9 "wide" version used on mobile. */
     imageMobile: imagePath.optional(),
     alt: z.string().optional(),
+    /**
+     * Optional link out of a section, e.g. to the live product or a waitlist.
+     * Always opens in a new tab, and the accessible name says so.
+     */
+    link: z
+      .object({
+        href: z.string().url('Use a full URL, e.g. "https://example.com".'),
+        label: z.string().min(1),
+      })
+      .optional(),
   })
   .refine((s) => !s.image || (s.alt && s.alt.trim().length > 0), {
     message: 'A section with an image needs alt text describing what the screens show.',

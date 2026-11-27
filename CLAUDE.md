@@ -78,6 +78,7 @@ Schema (`src/content.config.ts`):
 | `roles[]` | `{ label, text }`, the meta row under the hero |
 | `sections[]` | `{ eyebrow, heading, paragraphs[], layout: stacked \| split, image?, imageMobile?, alt? }` |
 | `galleryHeading?`, `gallery[]` | `{ src, alt }` square images |
+| `sections[].link?` | `{ href, label }`, an optional link out of a section. Always opens in a new tab, with "(opens in new tab)" added to its accessible name |
 | `next?` | Slug of the next case study (drafts skipped automatically) |
 
 - The number of sections varies (Life 7, Spunk 6). Always render from the array.
