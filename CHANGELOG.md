@@ -6,6 +6,7 @@ Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 ## v1.7.2 (2026-11-28)
 
 - On a phone, the screens shown beside a case-study section are about 1.7x larger, so you can actually see what is on them.
+- Laterloft's pictures are reframed: the phones were running off the bottom of two of them, and the rest had room to spare. They are now larger and fully in frame.
 
 ## v1.7.1 (2026-11-28)
 

@@ -391,7 +391,14 @@ before it clips, which is not worth having.
 
 Making those bigger means reframing the compositions, not cropping them: for `laterloft`
 and `laterloft-site` through `scripts/compose-mockups.mjs`, for the other four by moving
-the Figma frames.
+the Figma frames. `laterloft`'s have been reframed this way, so its stacked section and
+hero are larger than the Figma four's.
+
+When editing scenes in that script, remember a phone stands about `innerW * 2.17` tall
+once the bezel is on (bezel is `round(innerW * 0.033)` and the screen is 0.475 wide for
+its height). Centre that height in the canvas. Sections 03 and 05 were rescaled from
+1072x800 to 1608x1200 without recomputing `y`, which left 90px empty above each phone
+while 50px of it ran off the bottom, visible on the live site before anyone noticed.
 
 ## Case-study section layout
 
