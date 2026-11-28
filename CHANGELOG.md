@@ -7,6 +7,8 @@ Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
 - Headings are now set in Fraunces, a serif, against Inter for everything else. The site had been one typeface throughout.
 - Clicking a project card now carries its picture and title into the case study instead of cutting to a new page, and moving between pages no longer reloads the whole site.
+- The page now arrives in the order it should be read: the heading first, then the line under it, then the skills, then the work.
+- The word "design" in the heading rolls over to "manage" and back once, shortly after the page settles.
 - All of it is off for anyone whose system is set to reduce motion.
 
 ## v1.6.0 (2026-11-28)

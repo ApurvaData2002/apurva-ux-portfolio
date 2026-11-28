@@ -214,6 +214,31 @@ on top of that is two animations fighting over the same elements.
 The cost is about 0.2s of mobile LCP, because an element at `opacity: 0` is not painted
 as far as the browser is concerned. Mobile performance stays at 99.
 
+## WordReel
+
+The word "design" in the homepage H1 rolls up to "manage" and back, like an arcade
+reel, once, about a second after the entrance finishes. `src/components/WordReel.astro`;
+no Figma counterpart.
+
+**It plays once and stops, deliberately.** A loop would fail WCAG 2.2.2 Pause, Stop,
+Hide, which wants a way to stop anything that moves by itself for over five seconds
+beside other content, and a pause button attached to an H1 is worse than no animation.
+Don't make it repeat without adding that control.
+
+Only the real word is in the markup. The other two frames are CSS `content` on an
+aria-hidden span, which keeps them out of the heading's text (a crawler reads
+"I design mobile apps that are easy to use.", not "I designmanagedesign mobile
+apps..."), out of the accessibility tree, and out of the DOM, while still sizing the
+box so nothing shifts when the reel starts. The first version put all three words in
+as real spans and the a11y audit printed the garbled sentence back.
+
+The box is as wide as the longest frame ("manage" is 21px wider than "design" in
+Fraunces), and the words are centred in it, so the slack reads as air either side
+rather than a hole after the resting word. A box that resized per word would reflow
+the rest of the sentence and cost the CLS of 0.
+
+Gated on `data-motion` and `data-first-load` like the entrance sequence.
+
 ## View transitions
 
 `<ClientRouter />` is in BaseLayout, so navigation swaps the body on the client instead

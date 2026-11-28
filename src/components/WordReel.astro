@@ -1,0 +1,110 @@
+---
+// One word in a sentence that rolls like an arcade reel: it travels up to the
+// other word, holds, then rolls back and rests on the real one. No Figma
+// counterpart.
+//
+// It plays once, shortly after the page has finished arriving, and then stops.
+// A loop would fail WCAG 2.2.2 Pause, Stop, Hide, which asks for a way to stop
+// anything that moves by itself for more than five seconds beside other
+// content, and a pause button welded to an H1 is worse than no animation.
+//
+// Only the real word is in the markup. The other two frames are CSS `content`
+// on an aria-hidden element, which keeps them out of three things at once: the
+// heading's text (so a crawler reads "I design mobile apps that are easy to
+// use.", not "I designmanagedesign mobile apps..."), the accessibility tree,
+// and the DOM. They still size the box, so the reel needs no JavaScript to
+// build and causes no layout shift when it starts.
+interface Props {
+  /** The real word: the one in the sentence, read by everything. */
+  word: string;
+  /** The word it rolls to and back from. Decorative. */
+  alt: string;
+}
+
+const { word, alt } = Astro.props;
+// A quote in the word would end the CSS string early.
+const css = (v: string) => `"${v.replace(/["\\]/g, '')}"`;
+---
+
+<span class="reel">
+  <span class="reel__track" style={`--reel-alt: ${css(alt)}; --reel-word: ${css(word)}`}>
+    <span class="reel__word">{word}</span>
+    <span class="reel__alts" aria-hidden="true"></span>
+  </span>
+</span>
+
+<style>
+  /* inline-grid so the box is as wide as the longest frame and the words after
+     it never move. One line tall, so nothing shifts vertically either. */
+  .reel {
+    display: inline-grid;
+    overflow: hidden;
+    height: 1lh;
+    vertical-align: bottom;
+  }
+
+  .reel__track {
+    display: grid;
+    grid-template-rows: repeat(3, 1lh);
+  }
+
+  .reel__word {
+    grid-area: 1 / 1;
+  }
+
+  /* Frames two and three: the other word, then the real one again, so the reel
+     keeps travelling the same way instead of reversing into its stop. */
+  .reel__alts {
+    grid-area: 2 / 1 / 4 / 2;
+    display: grid;
+    grid-template-rows: repeat(2, 1lh);
+  }
+
+  .reel__alts::before {
+    content: var(--reel-alt);
+  }
+
+  .reel__alts::after {
+    content: var(--reel-word);
+  }
+
+  /* The box is as wide as the longest frame, so a shorter word has slack.
+     Centred, that reads as a little air either side; left-aligned it reads as a
+     hole after the word, which is what the resting state looked like. */
+  .reel__word,
+  .reel__alts::before,
+  .reel__alts::after {
+    justify-self: center;
+    white-space: nowrap;
+  }
+
+  /* A reel winds up, decelerates into its stop and nudges a hair past it. The
+     curve is deliberately gentler than a snap: an abrupt jump on a line this
+     large is unpleasant to look at. Each travel takes 570ms and the other word
+     is held for just over a second, long enough to read it. */
+  @keyframes word-reel {
+    0% {
+      transform: translateY(0);
+      animation-timing-function: cubic-bezier(0.32, 0.12, 0.22, 1.03);
+    }
+    22% {
+      transform: translateY(calc(-100% / 3));
+      animation-timing-function: linear;
+    }
+    64% {
+      transform: translateY(calc(-100% / 3));
+      animation-timing-function: cubic-bezier(0.32, 0.12, 0.22, 1.03);
+    }
+    86%,
+    100% {
+      transform: translateY(calc(-200% / 3));
+    }
+  }
+
+  /* Gated like the entrance: only with motion allowed, only on arrival. Without
+     the attributes the track sits at the top and the real word is simply there,
+     which is also what happens with no JavaScript. */
+  :global(html[data-motion][data-first-load]) .reel__track {
+    animation: word-reel 2.6s var(--reel-start, 1100ms) both;
+  }
+</style>
