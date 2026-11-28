@@ -192,6 +192,28 @@ The serif reaches `.t-display`, `.t-h1`, `.t-h2`, `.t-h3`, `.t-brand` and the pr
 tile title. Body, lead, eyebrow, nav, buttons and anything small stay on Inter: the
 serif is for statements, not for interface text.
 
+## Entrance sequence
+
+On arrival the page assembles in reading order rather than all at once, so the eye is
+told where to start. Home: heading, the line under it, the skill pills, then the cards.
+A case study: the title, the hero image, then the meta row and the first section.
+Everything further down the page belongs to the scroll reveal.
+
+Timings are `--stagger-beat` (90ms) between things to read and `--stagger-item` (60ms)
+between cards, which are one group arriving rather than four separate beats. 90ms is
+the pace Chrome's stagger guidance and Motion both default to; the whole homepage
+sequence is done by about 810ms and no single animation runs longer than
+`--duration-slow`.
+
+**It is gated on `data-first-load` as well as `data-motion`.** BaseLayout sets that
+attribute on arrival and removes it on `astro:after-swap`, so the sequence plays when
+someone lands on the site and never again. Moving around inside it already animates,
+either the page cross-fade or a tile morphing into the hero, and replaying the entrance
+on top of that is two animations fighting over the same elements.
+
+The cost is about 0.2s of mobile LCP, because an element at `opacity: 0` is not painted
+as far as the browser is concerned. Mobile performance stays at 99.
+
 ## View transitions
 
 `<ClientRouter />` is in BaseLayout, so navigation swaps the body on the client instead
@@ -321,6 +343,13 @@ before.
   under the meta row or hangs under an image.
 - These rules must stay after the `max-width` rules above them in the file: same
   specificity, so source order decides.
+
+In that row the eyebrow and heading are wrapped in `.case-section__head` and the two
+columns are centred against each other (`align-items: center`), so the heading sits
+level with the body rather than hanging from the top. The wrapper is what makes that
+possible: with the eyebrow and heading as separate grid items there is no single box to
+centre, and `align-items: start` leaves the body at its natural height so spacer rows
+do not fix it either. Below 64em it stacks and the wrapper just carries the gap.
 
 From 90em up, a split section with an image changes again: the text column narrows to
 360fr and the image takes 616fr, so the screens get more room. The image stays inside

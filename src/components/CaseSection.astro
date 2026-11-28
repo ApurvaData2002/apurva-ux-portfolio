@@ -27,8 +27,12 @@ const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
 
 <section class:list={['case-section', `case-section--${layout}`, { 'case-section--has-image': image }]}>
   <div class="case-section__text">
-    <p class="t-eyebrow case-section__eyebrow">{String(number).padStart(2, '0')} · {eyebrow}</p>
-    <h2 id={id} class="t-h2">{heading}</h2>
+    {/* Eyebrow and heading travel together: in the full-width row they are one
+        block centred against the body beside them. */}
+    <div class="case-section__head">
+      <p class="t-eyebrow case-section__eyebrow">{String(number).padStart(2, '0')} · {eyebrow}</p>
+      <h2 id={id} class="t-h2">{heading}</h2>
+    </div>
     <div class="case-section__body t-body">
       {paragraphs.map((p) => <p>{p}</p>)}
       {
@@ -70,6 +74,12 @@ const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
   }
 
   .case-section__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+  }
+
+  .case-section__head {
     display: flex;
     flex-direction: column;
     gap: var(--space-16);
@@ -177,25 +187,12 @@ const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
          and heading stay flush left and the body starts exactly where an
          image would. One grid runs down the whole page. */
       grid-template-columns: minmax(0, 440fr) minmax(0, 536fr);
-      /* Third row takes up the slack. Without it a long body stretches the two
-         rows it spans and the heading drifts into the middle of the section. */
-      grid-template-rows: auto auto 1fr;
-      align-items: start;
+      /* Centred against each other, not hung from the top. Both columns are a
+         single block, so whichever is shorter sits in the middle of the taller
+         one. */
+      align-items: center;
       column-gap: var(--space-32);
-      row-gap: var(--space-16);
       max-width: none;
-    }
-
-    .case-section:not(.case-section--has-image) .case-section__eyebrow {
-      grid-area: 1 / 1;
-    }
-
-    .case-section:not(.case-section--has-image) .case-section__text > h2 {
-      grid-area: 2 / 1;
-    }
-
-    .case-section:not(.case-section--has-image) .case-section__body {
-      grid-area: 1 / 2 / 4 / 3;
     }
 
     /* A rule between two rows in a row, so a run of them reads as one list.

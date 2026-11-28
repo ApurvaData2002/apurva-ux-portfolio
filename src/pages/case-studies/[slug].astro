@@ -73,6 +73,35 @@ const { data } = entry;
   .case-study__footer {
     margin-top: var(--page-section-gap);
   }
+
+  @keyframes case-rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  /* Same reading order as the homepage: the title, then the screens, then the
+     first thing to read about them. Everything further down is handled by the
+     scroll reveal, which never touches what is already on screen.
+     `data-first-load` keeps this to arriving at the site: coming here from a
+     project card already animates, the card's thumbnail morphing into the hero
+     (see ProjectTile and CaseHero). */
+  :global(html[data-motion][data-first-load]) .case-study :global(.case-hero__intro),
+  :global(html[data-motion][data-first-load]) .case-study :global(.case-hero__media),
+  :global(html[data-motion][data-first-load]) .case-study :global(.case-hero > :nth-child(n + 3)),
+  :global(html[data-motion][data-first-load]) .case-study__body > :global(:first-child) {
+    animation: case-rise var(--duration-slow) var(--ease-out) both;
+  }
+
+  :global(html[data-motion][data-first-load]) .case-study :global(.case-hero__media) {
+    animation-delay: var(--stagger-beat);
+  }
+
+  :global(html[data-motion][data-first-load]) .case-study :global(.case-hero > :nth-child(n + 3)),
+  :global(html[data-motion][data-first-load]) .case-study__body > :global(:first-child) {
+    animation-delay: calc(var(--stagger-beat) * 2);
+  }
 </style>
 
 <script>

@@ -96,6 +96,15 @@ const ogImage = Astro.site && image ? new URL(image, Astro.site).href : undefine
         // it swaps in, which drops data-motion. Without this, every reveal and
         // the homepage entrance stop running after the first navigation.
         document.addEventListener('astro:after-swap', apply);
+
+        // The entrance sequence is for arriving at the site, not for moving
+        // around inside it: after a client-side navigation the page already
+        // animated (a cross-fade, or a tile morphing into the hero), and
+        // replaying the entrance on top of that is two animations fighting.
+        document.documentElement.toggleAttribute('data-first-load', true);
+        document.addEventListener('astro:after-swap', function () {
+          document.documentElement.removeAttribute('data-first-load');
+        });
       })();
     </script>
   </head>
