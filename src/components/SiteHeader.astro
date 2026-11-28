@@ -111,31 +111,43 @@ const drawerId = 'menu-drawer';
 </style>
 
 <script>
-  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
-  const drawer = toggle && document.getElementById(toggle.getAttribute('aria-controls') ?? '');
+  import { onEachPage } from '../lib/page-init';
 
-  if (toggle && drawer) {
-    // While the drawer is open it covers the page, so make the page behind it inert.
-    const behind = () => document.querySelectorAll<HTMLElement>('#main, #site-footer');
+  onEachPage((signal) => {
+    const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+    const drawer = toggle && document.getElementById(toggle.getAttribute('aria-controls') ?? '');
 
-    const setOpen = (open: boolean, { returnFocus = false } = {}) => {
-      toggle.setAttribute('aria-expanded', String(open));
-      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-      drawer.hidden = !open;
-      document.documentElement.style.overflow = open ? 'hidden' : '';
-      behind().forEach((el) => (el.inert = open));
-      if (returnFocus) toggle.focus();
-    };
+    if (toggle && drawer) {
+      // While the drawer is open it covers the page, so make the page behind it inert.
+      const behind = () => document.querySelectorAll<HTMLElement>('#main, #site-footer');
 
-    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+      const setOpen = (open: boolean, { returnFocus = false } = {}) => {
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        drawer.hidden = !open;
+        document.documentElement.style.overflow = open ? 'hidden' : '';
+        behind().forEach((el) => (el.inert = open));
+        if (returnFocus) toggle.focus();
+      };
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !drawer.hidden) setOpen(false, { returnFocus: true });
-    });
+      toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'), { signal });
 
-    // The drawer does not exist on desktop; close it if the window grows past 1024px.
-    matchMedia('(min-width: 64em)').addEventListener('change', (e) => {
-      if (e.matches && !drawer.hidden) setOpen(false);
-    });
-  }
+      document.addEventListener(
+        'keydown',
+        (e) => {
+          if (e.key === 'Escape' && !drawer.hidden) setOpen(false, { returnFocus: true });
+        },
+        { signal },
+      );
+
+      // The drawer does not exist on desktop; close it if the window grows past 1024px.
+      matchMedia('(min-width: 64em)').addEventListener(
+        'change',
+        (e) => {
+          if (e.matches && !drawer.hidden) setOpen(false);
+        },
+        { signal },
+      );
+    }
+  });
 </script>

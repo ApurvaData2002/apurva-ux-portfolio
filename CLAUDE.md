@@ -29,7 +29,7 @@ no CSS framework. Node 22.12+.
 | `npm run preview` | Serve `dist/` locally |
 | `npm run check` | Type check (`astro check`), must report 0 errors |
 | `npm run audit:a11y` | axe WCAG 2.2 AA + keyboard, focus, menu, target size, 200% text, 320px reflow, reduced motion, on every page at 1440/768/393. Needs `npm run preview` running. `BASE_URL=` and `PAGES=/a,/b` to target others |
-| `npm run audit:lighthouse` | Lighthouse perf/a11y/best-practices/SEO, mobile + desktop. Targets: perf 90+, a11y 95+ (currently 100 everywhere) |
+| `npm run audit:lighthouse` | Lighthouse perf/a11y/best-practices/SEO, mobile + desktop. Targets: perf 90+, a11y 95+. Currently a11y/best-practices/SEO 100 and perf 100 on desktop; perf 99 on mobile since the serif and the view-transition router landed |
 
 On Windows Git Bash, prefix paths in env vars with `MSYS_NO_PATHCONV=1` (e.g. `PAGES=/404`).
 
@@ -176,6 +176,97 @@ Vite emitted in `_astro/`, then fails the build if any HTML links to it.
 BaseLayout already applies the side padding, so the intro lines up with the grid at every
 breakpoint. Don't hardcode the desktop 40px here, or it misaligns on tablet and mobile.
 
+## Typography
+
+Two faces. `--font-heading` is **Fraunces** (serif), `--font-body` is **Inter**. Both
+tokens pointed at Inter until Nov 2026, so the split existed but did nothing and every
+heading was Inter 500.
+
+Fraunces is the **static latin 500 cut** (`@fontsource/fraunces/latin-500.css`, 17kB),
+not the variable font. Every heading style uses weight 500 and nothing interpolates,
+and the variable file (65kB) cost 0.4s of mobile LCP for nothing. It is preloaded in
+BaseLayout beside Inter. If a heading ever needs a second weight, add that static cut
+rather than switching to the variable font.
+
+The serif reaches `.t-display`, `.t-h1`, `.t-h2`, `.t-h3`, `.t-brand` and the project
+tile title. Body, lead, eyebrow, nav, buttons and anything small stay on Inter: the
+serif is for statements, not for interface text.
+
+## Entrance sequence
+
+On arrival the page assembles in reading order rather than all at once, so the eye is
+told where to start. Home: heading, the line under it, the skill pills, then the cards.
+A case study: the title, the hero image, then the meta row and the first section.
+Everything further down the page belongs to the scroll reveal.
+
+Timings are `--stagger-beat` (90ms) between things to read and `--stagger-item` (60ms)
+between cards, which are one group arriving rather than four separate beats. 90ms is
+the pace Chrome's stagger guidance and Motion both default to; the whole homepage
+sequence is done by about 810ms and no single animation runs longer than
+`--duration-slow`.
+
+**It is gated on `data-first-load` as well as `data-motion`.** BaseLayout sets that
+attribute on arrival and removes it on `astro:after-swap`, so the sequence plays when
+someone lands on the site and never again. Moving around inside it already animates,
+either the page cross-fade or a tile morphing into the hero, and replaying the entrance
+on top of that is two animations fighting over the same elements.
+
+The cost is about 0.2s of mobile LCP, because an element at `opacity: 0` is not painted
+as far as the browser is concerned. Mobile performance stays at 99.
+
+## WordReel
+
+The word "design" in the homepage H1 rolls up to "manage" and back, like an arcade
+reel, once, about a second after the entrance finishes. `src/components/WordReel.astro`;
+no Figma counterpart.
+
+**It plays once and stops, deliberately.** A loop would fail WCAG 2.2.2 Pause, Stop,
+Hide, which wants a way to stop anything that moves by itself for over five seconds
+beside other content, and a pause button attached to an H1 is worse than no animation.
+Don't make it repeat without adding that control.
+
+Only the real word is in the markup. The other two frames are CSS `content` on an
+aria-hidden span, which keeps them out of the heading's text (a crawler reads
+"I design mobile apps that are easy to use.", not "I designmanagedesign mobile
+apps..."), out of the accessibility tree, and out of the DOM, while still sizing the
+box so nothing shifts when the reel starts. The first version put all three words in
+as real spans and the a11y audit printed the garbled sentence back.
+
+The box is as wide as the longest frame ("manage" is 21px wider than "design" in
+Fraunces), and the words are centred in it, so the slack reads as air either side
+rather than a hole after the resting word. A box that resized per word would reflow
+the rest of the sentence and cost the CLS of 0.
+
+Gated on `data-motion` and `data-first-load` like the entrance sequence.
+
+## View transitions
+
+`<ClientRouter />` is in BaseLayout, so navigation swaps the body on the client instead
+of reloading. A project tile's thumbnail and title morph into the case-study hero image
+and H1: ProjectTile and CaseHero put the same `transition:name` on each pair
+(`case-hero-<slug>` and `case-title-<slug>`), which is why CaseHero takes a `slug` prop
+it otherwise has no use for. Names must be unique per page, hence the slug.
+
+Three things this breaks if you forget them:
+
+- **Scripts only evaluate once.** A module script does not re-run when the body is
+  swapped, so anything that binds to elements goes dead after the first navigation.
+  Every component script is wrapped in `onEachPage` (`src/lib/page-init.ts`), which
+  re-runs it on `astro:page-load`.
+- **`onEachPage` hands you an AbortSignal, and every `addEventListener` must take it.**
+  It runs the setup twice on a first load (once at module evaluation, once on
+  `astro:page-load`) and aborts the previous run each time. Without the signal the
+  handlers stack: two click listeners on the menu toggle meant one click opened and
+  immediately closed it, which the a11y audit caught and a hand test did not.
+- **The swap copies `<html>`'s attributes from the incoming page**, which strips
+  `data-motion`. BaseLayout's inline script re-applies it on `astro:after-swap`;
+  without that, every scroll reveal and the homepage entrance stop running after the
+  first navigation while still looking fine on a hard load.
+
+Browsers do not apply `prefers-reduced-motion` to view transitions, so `global.css`
+cancels them under that query. Page transitions use `--duration-base`, the morphing
+pairs `--duration-slow`.
+
 ## Motion
 
 Motion has no Figma counterpart beyond the tile hover, so everything here is a
@@ -277,6 +368,13 @@ before.
   under the meta row or hangs under an image.
 - These rules must stay after the `max-width` rules above them in the file: same
   specificity, so source order decides.
+
+In that row the eyebrow and heading are wrapped in `.case-section__head` and the two
+columns are centred against each other (`align-items: center`), so the heading sits
+level with the body rather than hanging from the top. The wrapper is what makes that
+possible: with the eyebrow and heading as separate grid items there is no single box to
+centre, and `align-items: start` leaves the body at its natural height so spacer rows
+do not fix it either. Below 64em it stacks and the wrapper just carries the gap.
 
 From 90em up, a split section with an image changes again: the text column narrows to
 360fr and the image takes 616fr, so the screens get more room. The image stays inside

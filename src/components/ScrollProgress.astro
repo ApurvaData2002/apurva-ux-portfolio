@@ -39,28 +39,32 @@
 </style>
 
 <script>
-  const root = document.querySelector<HTMLElement>('[data-scroll-progress]');
-  const bar = document.querySelector<HTMLElement>('[data-scroll-progress-bar]');
+  import { onEachPage } from '../lib/page-init';
 
-  if (root && bar) {
-    root.hidden = false;
-    let frame = 0;
+  onEachPage((signal) => {
+    const root = document.querySelector<HTMLElement>('[data-scroll-progress]');
+    const bar = document.querySelector<HTMLElement>('[data-scroll-progress-bar]');
 
-    const update = () => {
-      frame = 0;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      // A page shorter than the viewport has no progress to report.
-      const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-      bar.style.transform = `scaleX(${ratio})`;
-    };
+    if (root && bar) {
+      root.hidden = false;
+      let frame = 0;
 
-    // Scroll events outrun paint, so coalesce them onto one frame.
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
+      const update = () => {
+        frame = 0;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        // A page shorter than the viewport has no progress to report.
+        const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+        bar.style.transform = `scaleX(${ratio})`;
+      };
 
-    addEventListener('scroll', schedule, { passive: true });
-    addEventListener('resize', schedule, { passive: true });
-    update();
-  }
+      // Scroll events outrun paint, so coalesce them onto one frame.
+      const schedule = () => {
+        if (!frame) frame = requestAnimationFrame(update);
+      };
+
+      addEventListener('scroll', schedule, { passive: true, signal });
+      addEventListener('resize', schedule, { passive: true, signal });
+      update();
+    }
+  });
 </script>

@@ -56,7 +56,10 @@
   --space-144: 144px;
 
   /* ---- Typography primitives (Typography collection) ---- */
-  --font-heading: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Headings carry the serif; body, UI and anything small stay on Inter. The
+     two tokens pointed at the same font until now, so the split existed but
+     did nothing. */
+  --font-heading: "Fraunces", Georgia, "Times New Roman", serif;
   --font-body: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
@@ -101,6 +104,13 @@
   --duration-tile: 250ms;
   /* Entrances and scroll reveals. Nothing on the site animates for longer. */
   --duration-slow: 300ms;
+  /* Entrance sequence. A "beat" is one thing to read, so the gap between them
+     is the pause between reading the heading and reading the line under it;
+     90ms is the pace Chrome's stagger guidance and Motion both default to.
+     Items inside one group (the project cards) follow faster: they are one
+     thing arriving, not four. */
+  --stagger-beat: 90ms;
+  --stagger-item: 60ms;
   --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
   /* Exit curve, for things leaving the screen: goes quickly, no settle.
      Entrances keep --ease-out, so they arrive fast and come to rest. */

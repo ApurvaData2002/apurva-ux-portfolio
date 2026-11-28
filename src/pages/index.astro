@@ -5,6 +5,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectTile from '../components/ProjectTile.astro';
 import SkillPill from '../components/SkillPill.astro';
+import WordReel from '../components/WordReel.astro';
 import { getPublishedCaseStudies } from '../lib/case-studies';
 
 const skills = ['UX Research', 'UI Design', 'User Flows', 'Prototyping'];
@@ -21,7 +22,9 @@ const showBackToTop = caseStudies.length > 3;
         {skills.map((skill) => <SkillPill>{skill}</SkillPill>)}
       </ul>
       <div class="home-intro__text">
-        <h1 class="t-h1">I design mobile apps that are easy to use.</h1>
+        <h1 class="t-h1">
+          I <WordReel word="design" alt="manage" /> mobile apps that are easy to use.
+        </h1>
         <p class="t-lead">I’m Apurva, a UI/UX designer. Here are some of the apps I’ve worked on.</p>
       </div>
     </div>
@@ -88,36 +91,42 @@ const showBackToTop = caseStudies.length > 3;
     }
   }
 
-  /* Staging: the pills, then the heading, then the tiles, 40ms apart, so the
-     page assembles in the order it is meant to be read instead of landing all
-     at once. The last tile has finished by 500ms, well inside the few seconds a
-     visitor spends deciding whether to stay.
-     `html[data-motion]` is set in BaseLayout before the first paint, so with no
-     JavaScript or with reduced motion none of this applies and every block
-     renders where it belongs. */
-  :global(html[data-motion]) .home-intro__skills,
-  :global(html[data-motion]) .home-intro__text,
-  :global(html[data-motion]) .projects-grid > li {
+  /* Reading order, one beat at a time: the heading, the line under it, the
+     skills, then the work. The cards follow each other faster than the beats
+     because they are one group arriving, not four things to read in turn.
+     `data-first-load` keeps this to arriving at the site; moving around inside
+     it already has the page transition (see BaseLayout). */
+  :global(html[data-motion][data-first-load]) .home-intro__text > :where(h1, p),
+  :global(html[data-motion][data-first-load]) .home-intro__skills,
+  :global(html[data-motion][data-first-load]) .projects-grid > li {
     animation: home-rise var(--duration-slow) var(--ease-out) both;
   }
 
-  :global(html[data-motion]) .home-intro__text {
-    animation-delay: 40ms;
+  :global(html[data-motion][data-first-load]) .home-intro__text > p {
+    animation-delay: var(--stagger-beat);
   }
 
-  :global(html[data-motion]) .projects-grid > li {
-    animation-delay: 80ms;
+  :global(html[data-motion][data-first-load]) .home-intro__skills {
+    animation-delay: calc(var(--stagger-beat) * 2);
   }
 
-  :global(html[data-motion]) .projects-grid > li:nth-child(2) {
-    animation-delay: 120ms;
+  :global(html[data-motion][data-first-load]) .projects-grid > li {
+    animation-delay: calc(var(--stagger-beat) * 3);
   }
 
-  :global(html[data-motion]) .projects-grid > li:nth-child(3) {
-    animation-delay: 160ms;
+  :global(html[data-motion][data-first-load]) .projects-grid > li:nth-child(2) {
+    animation-delay: calc(var(--stagger-beat) * 3 + var(--stagger-item));
   }
 
-  :global(html[data-motion]) .projects-grid > li:nth-child(4) {
-    animation-delay: 200ms;
+  :global(html[data-motion][data-first-load]) .projects-grid > li:nth-child(3) {
+    animation-delay: calc(var(--stagger-beat) * 3 + var(--stagger-item) * 2);
+  }
+
+  :global(html[data-motion][data-first-load]) .projects-grid > li:nth-child(4) {
+    animation-delay: calc(var(--stagger-beat) * 3 + var(--stagger-item) * 3);
+  }
+
+  :global(html[data-motion][data-first-load]) .projects-grid > li:nth-child(n + 5) {
+    animation-delay: calc(var(--stagger-beat) * 3 + var(--stagger-item) * 4);
   }
 </style>

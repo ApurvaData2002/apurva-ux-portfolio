@@ -32,7 +32,7 @@ const { data } = entry;
   <ScrollProgress />
 
   <div class="case-study">
-    <CaseHero title={data.title} summary={data.summary} hero={data.hero} heroAlt={data.heroAlt} roles={data.roles} />
+    <CaseHero slug={data.slug} title={data.title} summary={data.summary} hero={data.hero} heroAlt={data.heroAlt} roles={data.roles} />
 
     <div class="case-study__body">
       {data.sections.map((section, i) => <CaseSection number={i + 1} {...section} />)}
@@ -73,43 +73,79 @@ const { data } = entry;
   .case-study__footer {
     margin-top: var(--page-section-gap);
   }
+
+  @keyframes case-rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  /* Same reading order as the homepage: the title, then the screens, then the
+     first thing to read about them. Everything further down is handled by the
+     scroll reveal, which never touches what is already on screen.
+     `data-first-load` keeps this to arriving at the site: coming here from a
+     project card already animates, the card's thumbnail morphing into the hero
+     (see ProjectTile and CaseHero). */
+  :global(html[data-motion][data-first-load]) .case-study :global(.case-hero__intro),
+  :global(html[data-motion][data-first-load]) .case-study :global(.case-hero__media),
+  :global(html[data-motion][data-first-load]) .case-study :global(.case-hero > :nth-child(n + 3)),
+  :global(html[data-motion][data-first-load]) .case-study__body > :global(:first-child) {
+    animation: case-rise var(--duration-slow) var(--ease-out) both;
+  }
+
+  :global(html[data-motion][data-first-load]) .case-study :global(.case-hero__media) {
+    animation-delay: var(--stagger-beat);
+  }
+
+  :global(html[data-motion][data-first-load]) .case-study :global(.case-hero > :nth-child(n + 3)),
+  :global(html[data-motion][data-first-load]) .case-study__body > :global(:first-child) {
+    animation-delay: calc(var(--stagger-beat) * 2);
+  }
 </style>
 
 <script>
-  // Fade each section up as it comes into view, so a 5000px case study has some
-  // rhythm instead of being one unbroken scroll.
-  //
-  // This script is what adds `data-reveal`, and it only does so once BaseLayout
-  // has set `data-motion`. So the hidden state can never outlive the code that
-  // clears it: with no JavaScript, with reduced motion, or in a browser without
-  // IntersectionObserver, nothing is hidden in the first place.
-  if (
-    document.documentElement.hasAttribute('data-motion') &&
-    'IntersectionObserver' in window
-  ) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          (entry.target as HTMLElement).dataset.revealed = '';
-          // One shot. Scrolling back up must not replay it.
-          observer.unobserve(entry.target);
-        }
-      },
-      // Start once the block is properly on screen, not on its first pixel.
-      { rootMargin: '0px 0px -10% 0px' },
-    );
+  import { onEachPage } from '../../lib/page-init';
 
-    const blocks = document.querySelectorAll<HTMLElement>(
-      '.case-study__body > *, .case-study .gallery',
-    );
+  onEachPage((signal) => {
+    // Fade each section up as it comes into view, so a 5000px case study has some
+    // rhythm instead of being one unbroken scroll.
+    //
+    // This script is what adds `data-reveal`, and it only does so once BaseLayout
+    // has set `data-motion`. So the hidden state can never outlive the code that
+    // clears it: with no JavaScript, with reduced motion, or in a browser without
+    // IntersectionObserver, nothing is hidden in the first place.
+    if (
+      document.documentElement.hasAttribute('data-motion') &&
+      'IntersectionObserver' in window
+    ) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            (entry.target as HTMLElement).dataset.revealed = '';
+            // One shot. Scrolling back up must not replay it.
+            observer.unobserve(entry.target);
+          }
+        },
+        // Start once the block is properly on screen, not on its first pixel.
+        { rootMargin: '0px 0px -10% 0px' },
+      );
 
-    for (const block of blocks) {
-      // Anything already on screen belongs to the first paint, not to the
-      // scroll: leave it be rather than fading it in under the visitor.
-      if (block.getBoundingClientRect().top < window.innerHeight) continue;
-      block.dataset.reveal = '';
-      observer.observe(block);
+      // Stop observing when this page is navigated away from.
+      signal.addEventListener('abort', () => observer.disconnect());
+
+      const blocks = document.querySelectorAll<HTMLElement>(
+        '.case-study__body > *, .case-study .gallery',
+      );
+
+      for (const block of blocks) {
+        // Anything already on screen belongs to the first paint, not to the
+        // scroll: leave it be rather than fading it in under the visitor.
+        if (block.getBoundingClientRect().top < window.innerHeight) continue;
+        block.dataset.reveal = '';
+        observer.observe(block);
+      }
     }
-  }
+  });
 </script>

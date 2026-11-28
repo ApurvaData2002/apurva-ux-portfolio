@@ -207,90 +207,98 @@ const photo = resolveImage(site.avatar);
 </style>
 
 <script>
-  // Morse "···· ··" shows first, then decodes to "hi" (Figma prototype timings).
-  const DECODE_AFTER = 900;
-  const TAP_HIDE_AFTER = 1600;
+  import { onEachPage } from '../lib/page-init';
 
-  for (const el of document.querySelectorAll<HTMLElement>('[data-avatar-wave]')) {
-    let timers: number[] = [];
-    const set = (state: string) => (el.dataset.state = state);
-    const clear = () => {
-      timers.forEach(clearTimeout);
-      timers = [];
-    };
-    const play = (autoHide: boolean) => {
-      clear();
-      set('morse');
-      timers.push(window.setTimeout(() => set('decoded'), DECODE_AFTER));
-      if (autoHide) timers.push(window.setTimeout(() => set('default'), DECODE_AFTER + TAP_HIDE_AFTER));
-    };
+  onEachPage((signal) => {
+    // Morse "···· ··" shows first, then decodes to "hi" (Figma prototype timings).
+    const DECODE_AFTER = 900;
+    const TAP_HIDE_AFTER = 1600;
 
-    el.addEventListener('pointerenter', (e) => {
-      if (e.pointerType === 'mouse' && el.dataset.avatarWave === 'hover') play(false);
-    });
-    el.addEventListener('pointerleave', (e) => {
-      if (e.pointerType === 'mouse' && el.dataset.avatarWave === 'hover') {
+    for (const el of document.querySelectorAll<HTMLElement>('[data-avatar-wave]')) {
+      let timers: number[] = [];
+      const set = (state: string) => (el.dataset.state = state);
+      const clear = () => {
+        timers.forEach(clearTimeout);
+        timers = [];
+      };
+      const play = (autoHide: boolean) => {
         clear();
-        set('default');
-      }
-    });
-    el.addEventListener('click', () => {
-      if (el.dataset.state !== 'default' && el.dataset.avatarWave === 'tap') {
-        clear();
-        set('default');
-        return;
-      }
-      if (el.dataset.avatarWave === 'tap' || matchMedia('(hover: none)').matches) play(true);
-    });
-  }
+        set('morse');
+        timers.push(window.setTimeout(() => set('decoded'), DECODE_AFTER));
+        if (autoHide) timers.push(window.setTimeout(() => set('default'), DECODE_AFTER + TAP_HIDE_AFTER));
+      };
 
-  // Waving video: only plays when visible and when reduced motion is off.
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+      el.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'mouse' && el.dataset.avatarWave === 'hover') play(false);
+      }, { signal });
+      el.addEventListener('pointerleave', (e) => {
+        if (e.pointerType === 'mouse' && el.dataset.avatarWave === 'hover') {
+          clear();
+          set('default');
+        }
+      }, { signal });
+      el.addEventListener('click', () => {
+        if (el.dataset.state !== 'default' && el.dataset.avatarWave === 'tap') {
+          clear();
+          set('default');
+          return;
+        }
+        if (el.dataset.avatarWave === 'tap' || matchMedia('(hover: none)').matches) play(true);
+      }, { signal });
+    }
 
-  for (const video of document.querySelectorAll<HTMLVideoElement>('[data-avatar-video]')) {
-    const root = video.closest('.avatar-wave');
-    const pause = root?.querySelector<HTMLButtonElement>('[data-avatar-pause]');
-    let userPaused = false;
+    // Waving video: only plays when visible and when reduced motion is off.
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
-    const setPaused = (paused: boolean) => {
-      if (!pause) return;
-      pause.toggleAttribute('data-paused', paused);
-      pause.setAttribute('aria-label', paused ? 'Play avatar animation' : 'Pause avatar animation');
-    };
+    for (const video of document.querySelectorAll<HTMLVideoElement>('[data-avatar-video]')) {
+      const root = video.closest('.avatar-wave');
+      const pause = root?.querySelector<HTMLButtonElement>('[data-avatar-pause]');
+      let userPaused = false;
 
-    const start = () => {
-      if (reduceMotion.matches || userPaused || video.offsetParent === null) return;
-      video.play().catch(() => {
-        /* missing file or autoplay blocked: the photo stays */
-      });
-    };
+      const setPaused = (paused: boolean) => {
+        if (!pause) return;
+        pause.toggleAttribute('data-paused', paused);
+        pause.setAttribute('aria-label', paused ? 'Play avatar animation' : 'Pause avatar animation');
+      };
 
-    video.addEventListener('playing', () => {
-      video.dataset.playing = '';
-      // A loop that runs longer than 5 seconds needs a pause control.
-      if (pause) pause.hidden = false;
-      setPaused(false);
-    });
-    video.addEventListener('pause', () => setPaused(true));
+      const start = () => {
+        if (reduceMotion.matches || userPaused || video.offsetParent === null) return;
+        video.play().catch(() => {
+          /* missing file or autoplay blocked: the photo stays */
+        });
+      };
 
-    pause?.addEventListener('click', () => {
-      if (video.paused) {
-        userPaused = false;
-        start();
-      } else {
-        userPaused = true;
-        video.pause();
-      }
-    });
+      video.addEventListener('playing', () => {
+        video.dataset.playing = '';
+        // A loop that runs longer than 5 seconds needs a pause control.
+        if (pause) pause.hidden = false;
+        setPaused(false);
+      }, { signal });
+      video.addEventListener('pause', () => setPaused(true), { signal });
 
-    reduceMotion.addEventListener('change', () => {
-      if (reduceMotion.matches) {
-        video.pause();
-        delete video.dataset.playing;
-        if (pause) pause.hidden = true;
-      } else start();
-    });
+      pause?.addEventListener('click', () => {
+        if (video.paused) {
+          userPaused = false;
+          start();
+        } else {
+          userPaused = true;
+          video.pause();
+        }
+      }, { signal });
 
-    start();
-  }
+      reduceMotion.addEventListener(
+        'change',
+        () => {
+          if (reduceMotion.matches) {
+            video.pause();
+            delete video.dataset.playing;
+            if (pause) pause.hidden = true;
+          } else start();
+        },
+        { signal },
+      );
+
+      start();
+    }
+  });
 </script>
