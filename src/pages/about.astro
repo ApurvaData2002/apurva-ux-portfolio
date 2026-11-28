@@ -70,11 +70,15 @@ import { site } from '../data/site';
     gap: var(--page-stack-gap);
   }
 
-  @media (min-width: 48em) {
+  /* Side by side only from 85em. Below that each column is under 450px, which
+     is too narrow a measure for the bio and leaves the poster shorter than the
+     text, so the two stack instead. */
+  @media (min-width: 85em) {
     .about__bio-row {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      align-items: start;
+      /* The poster cell takes the row's height, which the text sets. */
+      align-items: stretch;
     }
   }
 
@@ -82,6 +86,15 @@ import { site } from '../data/site';
     display: flex;
     flex-direction: column;
     gap: var(--space-8);
+  }
+
+  /* The bio had no measure of its own and ran to 728px on a wide screen. The
+     rest of the site caps prose at 640 (see CaseHero and the stacked case
+     sections); this brings the About page into line. */
+  @media (min-width: 48em) {
+    .about__text {
+      max-width: 640px;
+    }
   }
 
   .about__body {
@@ -101,6 +114,38 @@ import { site } from '../data/site';
   .about__poster {
     aspect-ratio: 488 / 648;
     overflow: hidden;
+  }
+
+  /* Must come after the rule above: same specificity, and the media query adds
+     none, so source order is what decides. */
+  @media (min-width: 85em) {
+    /* The poster is a tall 2:3 graphic standing next to text of unpredictable
+       length, so it cannot both fill its column and end level with the text.
+       Cropping is not an option either: the composition puts a photo in each
+       corner, so any meaningful crop cuts them off.
+       So the text decides the height. The image is taken out of flow, which
+       stops it setting the row height, and scaled to fit the cell. Whenever it
+       would overshoot the text, which is what happens on wide screens, it
+       shrinks until the two bottoms line up. Where the text is the taller of
+       the two it keeps its natural size, as before. */
+    .about__poster {
+      position: relative;
+      aspect-ratio: auto;
+      min-height: 0;
+    }
+
+    .about__poster :global(.case-image) {
+      position: absolute;
+      inset: 0;
+      /* The placeholder tint would otherwise show as a block of green wherever
+         the contained image does not reach. */
+      background: none;
+    }
+
+    .about__poster :global(.case-image img) {
+      object-fit: contain;
+      object-position: top right;
+    }
   }
 
   .about__resume {
@@ -156,5 +201,34 @@ import { site } from '../data/site';
 
   .about__list--spaced {
     gap: var(--space-16);
+  }
+
+  @keyframes about-rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  /* The same reading order the other pages arrive in: the greeting, then what
+     it says, then the poster, then the resume. Gated on data-first-load so it
+     plays on arrival and never on top of a page transition (see BaseLayout). */
+  :global(html[data-motion][data-first-load]) .about__text > h1,
+  :global(html[data-motion][data-first-load]) .about__body,
+  :global(html[data-motion][data-first-load]) .about__poster,
+  :global(html[data-motion][data-first-load]) .about__resume {
+    animation: about-rise var(--duration-slow) var(--ease-out) both;
+  }
+
+  :global(html[data-motion][data-first-load]) .about__body {
+    animation-delay: var(--stagger-beat);
+  }
+
+  :global(html[data-motion][data-first-load]) .about__poster {
+    animation-delay: calc(var(--stagger-beat) * 2);
+  }
+
+  :global(html[data-motion][data-first-load]) .about__resume {
+    animation-delay: calc(var(--stagger-beat) * 3);
   }
 </style>

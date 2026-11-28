@@ -3,6 +3,11 @@
 A short note for each release of the live site. Newest first.
 Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
+## v1.7.1 (2026-11-28)
+
+- The About page now arrives in the same order as the rest of the site: the greeting, the text, the photo, then the resume.
+- On a wide screen the photo no longer runs on past the end of the writing beside it; the two now finish level. On narrower screens the photo sits below the text, as before, and it now moves there sooner so neither column gets too narrow to read.
+
 ## v1.7.0 (2026-11-28)
 
 - Headings are now set in Fraunces, a serif, against Inter for everything else. The site had been one typeface throughout.
