@@ -19,12 +19,7 @@ export const imageSizes = {
   split: {
     widths: [400, 536, 800, 1072, 1600],
     sizes:
-      '(min-width: 90em) calc((100vw - 464px) * 0.631), (min-width: 64em) calc((100vw - 464px) * 0.55), calc((100vw - 96px) / 2)',
-  },
-  /** Mobile version of a split section (the 16:9 "wide" export). */
-  splitMobile: {
-    widths: [400, 720, 1080],
-    sizes: 'calc(100vw - 32px)',
+      '(min-width: 90em) calc((100vw - 464px) * 0.631), (min-width: 64em) calc((100vw - 464px) * 0.55), (min-width: 48em) calc((100vw - 96px) / 2), calc(100vw - 32px)',
   },
   /** Gallery: 3 columns of 320 / 224, 2 columns on mobile. */
   gallery: {

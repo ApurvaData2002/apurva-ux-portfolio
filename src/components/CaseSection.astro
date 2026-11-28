@@ -2,7 +2,7 @@
 // Figma: CaseSection (Layout=Stacked | Split; Breakpoint=Desktop | Tablet | Mobile).
 // Eyebrow ("02 · Constraints") + H2 + paragraphs + optional image.
 // Stacked: full-width image under the text. Split: text 5/11, image 6/11.
-// Mobile is always stacked, and a split section shows its imageMobile there.
+// Mobile is always stacked, and both layouts show the same image there.
 import CaseImage from './CaseImage.astro';
 import { imageSizes } from '../lib/image-sizes';
 
@@ -20,7 +20,7 @@ interface Props {
   link?: { href: string; label: string };
 }
 
-const { number, eyebrow, heading, paragraphs, layout, image, imageMobile, alt = '', link } = Astro.props;
+const { number, eyebrow, heading, paragraphs, layout, image, alt = '', link } = Astro.props;
 const id = `section-${String(number).padStart(2, '0')}`;
 const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
 ---
@@ -52,15 +52,7 @@ const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
   {
     image && (
       <div class="case-section__media">
-        <CaseImage
-          src={image}
-          mobileSrc={layout === 'split' ? imageMobile : undefined}
-          alt={alt}
-          widths={size.widths}
-          sizes={size.sizes}
-          mobileWidths={imageSizes.splitMobile.widths}
-          mobileSizes={imageSizes.splitMobile.sizes}
-        />
+        <CaseImage src={image} alt={alt} widths={size.widths} sizes={size.sizes} />
       </div>
     )
   }
@@ -115,6 +107,19 @@ const size = layout === 'split' ? imageSizes.split : imageSizes.wide;
   .case-section__media {
     aspect-ratio: 361 / 200;
     overflow: hidden;
+  }
+
+  /* A split section is taller on mobile, and shows its own 4:3 image rather
+     than the 16:9 "wide" export it used to swap in. Those wide compositions
+     set the phones in a lot of air: at 361px across one rendered about 76px
+     wide, too small to read. The 4:3 version frames the same phones far
+     larger, so this costs no crop and no new file.
+     Stacked sections keep 16:9. Their only image is the wide one, so a taller
+     box could only zoom by cropping, and that cuts the outer phones off
+     Spunk's four-up and slices the browser windows on Event Management and
+     Website redesign. */
+  .case-section--split .case-section__media {
+    aspect-ratio: 4 / 3;
   }
 
   @media (min-width: 48em) {

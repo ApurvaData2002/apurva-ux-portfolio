@@ -3,6 +3,10 @@
 A short note for each release of the live site. Newest first.
 Versions are git tags (`v1.0.0`), so any release can be found and rolled back.
 
+## v1.7.2 (2026-11-28)
+
+- On a phone, the screens shown beside a case-study section are about 1.7x larger, so you can actually see what is on them.
+
 ## v1.7.1 (2026-11-28)
 
 - The About page now arrives in the same order as the rest of the site: the greeting, the text, the photo, then the resume.

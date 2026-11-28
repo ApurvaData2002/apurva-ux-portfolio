@@ -20,8 +20,6 @@ const section = z
     layout: z.enum(['stacked', 'split']),
     /** Split: the 4:3 image. Stacked: the 16:9 image. */
     image: imagePath.optional(),
-    /** Split only: the 16:9 "wide" version used on mobile. */
-    imageMobile: imagePath.optional(),
     alt: z.string().optional(),
     /**
      * Optional link out of a section, e.g. to the live product or a waitlist.
@@ -37,10 +35,6 @@ const section = z
   .refine((s) => !s.image || (s.alt && s.alt.trim().length > 0), {
     message: 'A section with an image needs alt text describing what the screens show.',
     path: ['alt'],
-  })
-  .refine((s) => !s.imageMobile || s.image, {
-    message: 'imageMobile needs an image too.',
-    path: ['imageMobile'],
   });
 
 const caseStudies = defineCollection({

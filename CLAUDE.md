@@ -76,7 +76,7 @@ Schema (`src/content.config.ts`):
 | `hero`, `heroAlt` | 16:9 hero + alt |
 | `thumbnail` | Tile image (usually the hero) |
 | `roles[]` | `{ label, text }`, the meta row under the hero |
-| `sections[]` | `{ eyebrow, heading, paragraphs[], layout: stacked \| split, image?, imageMobile?, alt? }` |
+| `sections[]` | `{ eyebrow, heading, paragraphs[], layout: stacked \| split, image?, alt? }` |
 | `galleryHeading?`, `gallery[]` | `{ src, alt }` square images |
 | `sections[].link?` | `{ href, label }`, an optional link out of a section. Always opens in a new tab, with "(opens in new tab)" added to its accessible name |
 | `next?` | Slug of the next case study (drafts skipped automatically) |
@@ -91,9 +91,10 @@ Schema (`src/content.config.ts`):
 
 ## Images
 
-- Location: `public/case-studies/<slug>/`. Names: `hero.png`, `section-NN.png` (NN = section
-  number), `section-NN-wide.png` (16:9 mobile version of a split section),
-  `gallery-01.png` … `gallery-06.png`.
+- Location: `public/case-studies/<slug>/`. Names: `hero.png`, `section-NN.png` (NN =
+  section number), `gallery-01.png` … `gallery-06.png`. There used to be a
+  `section-NN-wide.png` per split section, a 16:9 cut shown on phones; split sections now
+  use their own 4:3 image at every width, so those files were deleted.
 - Source: Figma file `personal-portfolio` (key `xspfhLJkxnzcJ65ZUJTrtk`), page **pictures**,
   frames named "LIFE · …" / "SPUNK · …" in the "… mockups (auto)" sections. Export hero,
   stacked and gallery at **2x** (2016x1136 and 640x640) and the **4:3 split frames at 3x**
@@ -368,6 +369,29 @@ ran to 728px on a wide screen.
 - Avatar: `alt=""`. Video (if added) never plays with reduced motion and has a pause control.
 - Reflow at 320px with no horizontal scroll; text resizes to 200% without breaking.
 - Don't name `<section>`s with aria-labelledby (avoids landmark clutter); headings do the job.
+
+## Image sizes on phones
+
+A case-study image box is 361x200 on mobile, from the Figma frames. These images are
+pictures of phones, and at 361px across that renders a phone about **76px wide**, too
+small to read what is on its screen.
+
+A **split** section fixes this for free: its box is 4:3 on mobile and it shows its own
+4:3 image rather than swapping to a 16:9 one. Those wide compositions set the phones in
+a lot of air; the 4:3 version frames the same phones about **1.7x larger**, so nothing
+is cropped to get there.
+
+A **stacked** section stays 16:9, and so do the hero and the project tiles. Their only
+image is the wide one, so a taller box could only zoom by cropping, and that was
+measured as destructive: a 4:3 crop cuts the outer two phones off Spunk's four-up, the
+left phone off Life's booklist section, and slices the browser windows on Event
+Management, Website redesign and the Laterloft site. The widest composition
+(Website redesign's hero, spanning 128 to 1912 of 2016) leaves room for only a 13% zoom
+before it clips, which is not worth having.
+
+Making those bigger means reframing the compositions, not cropping them: for `laterloft`
+and `laterloft-site` through `scripts/compose-mockups.mjs`, for the other four by moving
+the Figma frames.
 
 ## Case-study section layout
 

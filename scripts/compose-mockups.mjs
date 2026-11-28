@@ -191,9 +191,6 @@ if (SLUG === 'laterloft-site') {
   await scene('section-02.png', 1608, 1200, [
     { kind: 'browser', file: 'sec-compare.png', innerW: 1360, contentH: 557, x: 124, y: 279 },
   ]);
-  await scene('section-02-wide.png', 2016, 1136, [
-    { kind: 'browser', file: 'sec-compare.png', innerW: 1700, contentH: 696, x: 158, y: 191 },
-  ]);
 
   await scene('section-04.png', 2016, 1136, [
     { kind: 'browser', file: 'sec-how.png', innerW: 1700, contentH: 685, x: 158, y: 197 },
@@ -201,9 +198,6 @@ if (SLUG === 'laterloft-site') {
 
   await scene('section-05.png', 1608, 1200, [
     { kind: 'browser', file: 'sec-action.png', innerW: 1360, contentH: 811, x: 124, y: 152 },
-  ]);
-  await scene('section-05-wide.png', 2016, 1136, [
-    { kind: 'browser', file: 'sec-action.png', innerW: 1700, contentH: 1013, x: 158, y: 32 },
   ]);
 
   // Gallery: the same page on a phone, one square per section.
@@ -228,10 +222,6 @@ if (SLUG === 'laterloft-site') {
     { name: 'share screen', innerW: 534, x: 198, y: 90 },
     { name: 'save sheet', innerW: 534, x: 840, y: 90 },
   ]);
-  await scene('section-03-wide.png', 2016, 1136, [
-    { name: 'share screen', innerW: 398, x: 552, y: 110 },
-    { name: 'save sheet', innerW: 398, x: 1040, y: 110 },
-  ]);
 
   // 04 Decisions, stacked 16:9: the card and the viewer side by side.
   await scene('section-04.png', 2016, 1136, [
@@ -243,10 +233,6 @@ if (SLUG === 'laterloft-site') {
   await scene('section-05.png', 1608, 1200, [
     { name: 'library light mode', innerW: 534, x: 198, y: 90 },
     { name: 'library dark mode', innerW: 534, x: 840, y: 90 },
-  ]);
-  await scene('section-05-wide.png', 2016, 1136, [
-    { name: 'library light mode', innerW: 398, x: 552, y: 110 },
-    { name: 'library dark mode', innerW: 398, x: 1040, y: 110 },
   ]);
 
   // Gallery, six 1:1 squares. The phone overflows the bottom, as in the Figma
