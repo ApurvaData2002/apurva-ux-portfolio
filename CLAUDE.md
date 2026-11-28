@@ -394,6 +394,12 @@ and `laterloft-site` through `scripts/compose-mockups.mjs`, for the other four b
 the Figma frames. `laterloft`'s have been reframed this way, so its stacked section and
 hero are larger than the Figma four's.
 
+`scripts/audit-mockup-margins.mjs` prints how the artwork sits inside every case-study
+image: the margin on each side, and a warning when they are uneven or the artwork runs
+off an edge. Run it after changing a scene. A bottom margin of 0 is expected on gallery
+squares, where the phone is meant to run off, and on the Figma four, whose compositions
+bleed a phone off the bottom on purpose.
+
 When editing scenes in that script, remember a phone stands about `innerW * 2.17` tall
 once the bezel is on (bezel is `round(innerW * 0.033)` and the screen is 0.475 wide for
 its height). Centre that height in the canvas. Sections 03 and 05 were rescaled from

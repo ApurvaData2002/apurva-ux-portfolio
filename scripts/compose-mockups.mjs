@@ -188,8 +188,11 @@ if (SLUG === 'laterloft-site') {
     { name: 'm-hero', innerW: 286, x: 1540, y: 258 },
   ]);
 
+  // Browser height = round(innerW * 0.0333) for the toolbar, plus contentH.
+  // contentH is the source's own height at that width (sec-compare.png is
+  // 1440x590), so the page is never squashed. x and y centre the result.
   await scene('section-02.png', 1608, 1200, [
-    { kind: 'browser', file: 'sec-compare.png', innerW: 1360, contentH: 557, x: 124, y: 279 },
+    { kind: 'browser', file: 'sec-compare.png', innerW: 1440, contentH: 590, x: 84, y: 281 },
   ]);
 
   await scene('section-04.png', 2016, 1136, [
@@ -197,7 +200,7 @@ if (SLUG === 'laterloft-site') {
   ]);
 
   await scene('section-05.png', 1608, 1200, [
-    { kind: 'browser', file: 'sec-action.png', innerW: 1360, contentH: 811, x: 124, y: 152 },
+    { kind: 'browser', file: 'sec-action.png', innerW: 1440, contentH: 859, x: 84, y: 146 },
   ]);
 
   // Gallery: the same page on a phone, one square per section.
