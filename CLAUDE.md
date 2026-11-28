@@ -197,6 +197,7 @@ serif is for statements, not for interface text.
 On arrival the page assembles in reading order rather than all at once, so the eye is
 told where to start. Home: heading, the line under it, the skill pills, then the cards.
 A case study: the title, the hero image, then the meta row and the first section.
+About: the greeting, the bio, the poster, then the resume.
 Everything further down the page belongs to the scroll reveal.
 
 Timings are `--stagger-beat` (90ms) between things to read and `--stagger-item` (60ms)
@@ -316,6 +317,28 @@ takes over, so no-JS never shows a bar stuck at zero.
 
 Hover effects go inside `@media (hover: hover) and (pointer: fine)`, matching
 ProjectTile, so a touch device never gets a stuck hover state.
+
+## About page
+
+The bio and the poster sit side by side only from **85em**. Below that they stack. Two
+reasons: each column is under 450px there, too narrow a measure for the bio, and the
+poster ends up shorter than the text so there is nothing to gain by pairing them.
+
+Where they are paired, **the text sets the height and the poster follows**. The poster
+is a 2:3 graphic standing next to text of unpredictable length, so it cannot both fill
+its column and finish level with the text, and it cannot be cropped either: the
+composition puts a photo in each corner, so any real crop cuts them off. So the image
+is taken out of flow (`position: absolute` inside a stretched cell), which stops it
+setting the row height, and `object-fit: contain` scales it to whatever height the text
+gives it. Its `.case-image` background is cleared, or the placeholder tint shows as a
+block of green wherever the image does not reach.
+
+The `@media (min-width: 85em)` block that does this **must stay after the plain
+`.about__poster` rule**: same specificity, and a media query adds none, so source order
+decides. It silently did nothing when it sat above.
+
+The bio also has `max-width: 640px`, matching the prose caps elsewhere; it had none and
+ran to 728px on a wide screen.
 
 ## Accessibility requirements (WCAG 2.2 AA)
 
