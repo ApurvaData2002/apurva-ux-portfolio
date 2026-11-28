@@ -188,11 +188,11 @@ if (SLUG === 'laterloft-site') {
     { name: 'm-hero', innerW: 286, x: 1540, y: 258 },
   ]);
 
+  // Browser height = round(innerW * 0.0333) for the toolbar, plus contentH.
+  // contentH is the source's own height at that width (sec-compare.png is
+  // 1440x590), so the page is never squashed. x and y centre the result.
   await scene('section-02.png', 1608, 1200, [
-    { kind: 'browser', file: 'sec-compare.png', innerW: 1360, contentH: 557, x: 124, y: 279 },
-  ]);
-  await scene('section-02-wide.png', 2016, 1136, [
-    { kind: 'browser', file: 'sec-compare.png', innerW: 1700, contentH: 696, x: 158, y: 191 },
+    { kind: 'browser', file: 'sec-compare.png', innerW: 1440, contentH: 590, x: 84, y: 281 },
   ]);
 
   await scene('section-04.png', 2016, 1136, [
@@ -200,10 +200,7 @@ if (SLUG === 'laterloft-site') {
   ]);
 
   await scene('section-05.png', 1608, 1200, [
-    { kind: 'browser', file: 'sec-action.png', innerW: 1360, contentH: 811, x: 124, y: 152 },
-  ]);
-  await scene('section-05-wide.png', 2016, 1136, [
-    { kind: 'browser', file: 'sec-action.png', innerW: 1700, contentH: 1013, x: 158, y: 32 },
+    { kind: 'browser', file: 'sec-action.png', innerW: 1440, contentH: 859, x: 84, y: 146 },
   ]);
 
   // Gallery: the same page on a phone, one square per section.
@@ -213,40 +210,40 @@ if (SLUG === 'laterloft-site') {
   }
 } else {
 
-  // Hero, 16:9. Two phones flanking a larger centre one that bleeds off the
-  // bottom, mirroring the SPUNK and LIFE heroes.
+  // Hero, 16:9. Two phones flanking a larger centre one, mirroring the SPUNK
+  // and LIFE heroes.
+  //
+  // Geometry for every scene below: bezel = round(innerW * 0.033) and the
+  // screen is 0.475 wide for its height, so a phone stands about innerW * 2.17
+  // tall overall. Each y centres that height in the canvas. Getting it wrong
+  // leavesempty space above while the phone runs off the bottom, which is what the
+  // 1072x800 to 1608x1200 rescale did to sections 03 and 05.
   await scene('hero.png', 2016, 1136, [
-    { name: 'library light mode', innerW: 402, x: 283, y: 150 },
-    { name: 'save sheet', innerW: 452, x: 770, y: 70 },
-    { name: 'player screen', innerW: 402, x: 1305, y: 150 },
+    { name: 'library light mode', innerW: 418, x: 249, y: 113 },
+    { name: 'save sheet', innerW: 470, x: 757, y: 57 },
+    { name: 'player screen', innerW: 418, x: 1321, y: 113 },
   ]);
 
-  // 03 Constraints, split 4:3 + a 16:9 version for phones.
+  // 03 Constraints, split 4:3.
   // 1608x1200, not the 1072x800 the other case studies use: from 90em up a split
   // image is ~760 CSS px wide, so 2x needs about 1520.
   await scene('section-03.png', 1608, 1200, [
-    { name: 'share screen', innerW: 534, x: 198, y: 90 },
-    { name: 'save sheet', innerW: 534, x: 840, y: 90 },
-  ]);
-  await scene('section-03-wide.png', 2016, 1136, [
-    { name: 'share screen', innerW: 398, x: 552, y: 110 },
-    { name: 'save sheet', innerW: 398, x: 1040, y: 110 },
+    { name: 'share screen', innerW: 512, x: 216, y: 44 },
+    { name: 'save sheet', innerW: 512, x: 846, y: 44 },
   ]);
 
-  // 04 Decisions, stacked 16:9: the card and the viewer side by side.
+  // 04 Decisions, stacked 16:9: the card and the viewer side by side. Stacked
+  // sections keep 16:9 at every width, so the phones take as much of that
+  // height as they can; 272px of it was sitting unused.
   await scene('section-04.png', 2016, 1136, [
-    { name: 'category screen', innerW: 398, x: 552, y: 110 },
-    { name: 'player screen', innerW: 398, x: 1040, y: 110 },
+    { name: 'category screen', innerW: 468, x: 462, y: 60 },
+    { name: 'player screen', innerW: 468, x: 1056, y: 60 },
   ]);
 
-  // 05 Design system, split 4:3 + 16:9: the same screen light and dark.
+  // 05 Design system, split 4:3: the same screen light and dark.
   await scene('section-05.png', 1608, 1200, [
-    { name: 'library light mode', innerW: 534, x: 198, y: 90 },
-    { name: 'library dark mode', innerW: 534, x: 840, y: 90 },
-  ]);
-  await scene('section-05-wide.png', 2016, 1136, [
-    { name: 'library light mode', innerW: 398, x: 552, y: 110 },
-    { name: 'library dark mode', innerW: 398, x: 1040, y: 110 },
+    { name: 'library light mode', innerW: 512, x: 216, y: 44 },
+    { name: 'library dark mode', innerW: 512, x: 846, y: 44 },
   ]);
 
   // Gallery, six 1:1 squares. The phone overflows the bottom, as in the Figma
